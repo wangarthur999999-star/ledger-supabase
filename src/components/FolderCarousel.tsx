@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
-import { Folder } from "../types";
+import { Folder, TabId } from "../types";
 import { fetchFolders } from "../api/folders";
 
-export default function FolderCarousel() {
+interface FolderCarouselProps {
+  onTabChange: (id: TabId) => void;
+}
+
+export default function FolderCarousel({ onTabChange }: FolderCarouselProps) {
   const [folders, setFolders] = useState<Folder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -22,7 +26,10 @@ export default function FolderCarousel() {
     <section className="space-y-6">
       <div className="flex justify-between items-center px-1">
         <h3 className="font-headline font-bold text-2xl text-on-surface tracking-tight">Nieuwste Folders</h3>
-        <button className="text-primary font-bold text-sm flex items-center gap-1 hover:gap-2 transition-all">
+        <button 
+          onClick={() => onTabChange('folders')}
+          className="text-primary font-bold text-sm flex items-center gap-1 hover:gap-2 transition-all"
+        >
           Bekijk alles <ArrowRight size={16} />
         </button>
       </div>

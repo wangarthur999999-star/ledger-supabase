@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { Settings, RefreshCw, User } from "lucide-react";
 import { motion } from "motion/react";
 import { TabId } from "../types";
 
 interface TopAppBarProps {
   activeTab: TabId;
+  onTabChange: (id: TabId) => void;
 }
 
-export default function TopAppBar({ activeTab }: TopAppBarProps) {
+export default function TopAppBar({ activeTab, onTabChange }: TopAppBarProps) {
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const today = new Date();
   const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long' };
   const dateString = today.toLocaleDateString('nl-NL', options);
@@ -26,6 +29,13 @@ export default function TopAppBar({ activeTab }: TopAppBarProps) {
       default:
         return 'Sovereign Ledger';
     }
+  };
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setTimeout(() => {
+      window.location.reload();
+    }, 600);
   };
   
   return (
@@ -50,7 +60,7 @@ export default function TopAppBar({ activeTab }: TopAppBarProps) {
             </h1>
             {activeTab === 'dashboard' && (
               <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest opacity-60">
-                Update: 09:30
+                Update: {today.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}
               </p>
             )}
           </div>
@@ -59,13 +69,19 @@ export default function TopAppBar({ activeTab }: TopAppBarProps) {
         <div className="flex items-center gap-1">
           <motion.button 
             whileTap={{ scale: 0.9 }}
+            onClick={handleRefresh}
+            animate={isRefreshing ? { rotate: 360 } : {}}
+            transition={{ duration: 0.6 }}
             className="p-2.5 rounded-full hover:bg-surface-container transition-colors text-on-surface-variant"
+            title="Vernieuwen"
           >
             <RefreshCw size={20} />
           </motion.button>
           <motion.button 
             whileTap={{ scale: 0.9 }}
-            className="p-2.5 rounded-full hover:bg-surface-container transition-colors text-on-surface-variant"
+            onClick={() => onTabChange('settings')}
+            className={`p-2.5 rounded-full hover:bg-surface-container transition-colors ${activeTab === 'settings' ? 'text-primary bg-primary/10' : 'text-on-surface-variant'}`}
+            title="Instellingen"
           >
             <Settings size={20} />
           </motion.button>

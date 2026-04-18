@@ -7,6 +7,7 @@ import { fetchProducts } from "../api/products";
 
 export default function PricesView() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("Alle Producten");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,9 +31,23 @@ export default function PricesView() {
   }, [products]);
 
   const filteredProducts = useMemo(() => {
-    if (!searchQuery.trim()) return products;
-    return fuse.search(searchQuery).map(result => result.item);
-  }, [searchQuery, fuse, products]);
+    let filtered = products;
+    
+    // Apply category filter
+    if (activeCategory !== 'Alle Producten') {
+      filtered = filtered.filter(p => 
+        p.name.toLowerCase().includes(activeCategory.toLowerCase())
+      );
+    }
+    
+    // Apply search query
+    if (searchQuery.trim()) {
+      const fuseResults = fuse.search(searchQuery).map(result => result.item);
+      filtered = filtered.filter(p => fuseResults.some(fr => fr.id === p.id));
+    }
+    
+    return filtered;
+  }, [searchQuery, fuse, products, activeCategory]);
 
   return (
     <div className="space-y-8">
@@ -63,10 +78,16 @@ export default function PricesView() {
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
-        {['Alle Producten', 'Rijst', 'Olie', 'Eieren', 'Kip'].map((cat, i) => (
+        {['Alle Producten', 'Rijst', 'Olie', 'Eieren', 'Kip'].map((cat) => (
           <button 
             key={cat}
-            className={`px-6 py-2.5 rounded-full whitespace-nowrap text-sm font-bold transition-all ${i === 0 && !searchQuery ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high'}`}
+            onClick={() => {
+              setActiveCategory(cat);
+              if (cat !== 'Alle Producten') {
+                setSearchQuery('');
+              }
+            }}
+            className={`px-6 py-2.5 rounded-full whitespace-nowrap text-sm font-bold transition-all ${activeCategory === cat ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high'}`}
           >
             {cat}
           </button>

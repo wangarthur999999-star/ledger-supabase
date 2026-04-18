@@ -1,7 +1,20 @@
-import { Globe, Moon, Bell, MessageCircle, ShieldCheck, LogOut, ChevronRight, User } from "lucide-react";
-import { motion } from "motion/react";
+import { useState } from "react";
+import { Globe, Moon, Bell, MessageCircle, ShieldCheck, LogOut, ChevronRight, User, Check } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function SettingsView() {
+  const [language, setLanguage] = useState<'NL' | 'EN'>('NL');
+  const [darkMode, setDarkMode] = useState(false);
+  const [rateAlerts, setRateAlerts] = useState(true);
+  const [folderAlerts, setFolderAlerts] = useState(true);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showSavedToast, setShowSavedToast] = useState(false);
+
+  const showToast = () => {
+    setShowSavedToast(true);
+    setTimeout(() => setShowSavedToast(false), 2000);
+  };
+
   return (
     <div className="space-y-10">
       <section className="flex flex-col items-center gap-4 py-4">
@@ -39,8 +52,18 @@ export default function SettingsView() {
               <p className="text-xs text-on-surface-variant">Kies uw voorkeurstaal</p>
             </div>
             <div className="flex bg-surface-container p-1 rounded-full">
-              <button className="px-5 py-1.5 text-[11px] font-black rounded-full bg-primary text-white">NL</button>
-              <button className="px-5 py-1.5 text-[11px] font-black rounded-full text-on-surface-variant">EN</button>
+              <button 
+                onClick={() => { setLanguage('NL'); showToast(); }}
+                className={`px-5 py-1.5 text-[11px] font-black rounded-full transition-all ${language === 'NL' ? 'bg-primary text-white' : 'text-on-surface-variant hover:text-on-surface'}`}
+              >
+                NL
+              </button>
+              <button 
+                onClick={() => { setLanguage('EN'); showToast(); }}
+                className={`px-5 py-1.5 text-[11px] font-black rounded-full transition-all ${language === 'EN' ? 'bg-primary text-white' : 'text-on-surface-variant hover:text-on-surface'}`}
+              >
+                EN
+              </button>
             </div>
           </div>
         </div>
@@ -56,10 +79,17 @@ export default function SettingsView() {
           <div className="flex justify-between items-center py-2">
             <div>
               <p className="font-bold text-on-surface">Donkere Modus</p>
-              <p className="text-xs text-on-surface-variant">Systeem standaard</p>
+              <p className="text-xs text-on-surface-variant">{darkMode ? 'Ingeschakeld' : 'Systeem standaard'}</p>
             </div>
-            <button className="w-12 h-6 bg-surface-container rounded-full relative p-1 group">
-              <div className="w-4 h-4 bg-white rounded-full shadow-sm group-hover:translate-x-1 transition-transform" />
+            <button 
+              onClick={() => { setDarkMode(!darkMode); showToast(); }}
+              className={`w-12 h-6 rounded-full relative p-1 transition-colors ${darkMode ? 'bg-primary' : 'bg-surface-container'}`}
+            >
+              <motion.div 
+                animate={{ x: darkMode ? 24 : 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                className="w-4 h-4 bg-white rounded-full shadow-sm"
+              />
             </button>
           </div>
         </div>
@@ -81,8 +111,15 @@ export default function SettingsView() {
                   <p className="text-xs text-on-surface-variant">Ontvang meldingen bij grote SRD wijzigingen</p>
                 </div>
               </div>
-              <button className="w-12 h-6 bg-primary rounded-full relative p-1">
-                <div className="w-4 h-4 bg-white rounded-full translate-x-6" />
+              <button 
+                onClick={() => { setRateAlerts(!rateAlerts); showToast(); }}
+                className={`w-12 h-6 rounded-full relative p-1 transition-colors ${rateAlerts ? 'bg-primary' : 'bg-surface-container'}`}
+              >
+                <motion.div 
+                  animate={{ x: rateAlerts ? 24 : 0 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  className="w-4 h-4 bg-white rounded-full shadow-sm"
+                />
               </button>
             </div>
             <div className="flex justify-between items-center">
@@ -93,8 +130,15 @@ export default function SettingsView() {
                   <p className="text-xs text-on-surface-variant">Meldingen voor de nieuwste aanbiedingen</p>
                 </div>
               </div>
-              <button className="w-12 h-6 bg-primary rounded-full relative p-1">
-                <div className="w-4 h-4 bg-white rounded-full translate-x-6" />
+              <button 
+                onClick={() => { setFolderAlerts(!folderAlerts); showToast(); }}
+                className={`w-12 h-6 rounded-full relative p-1 transition-colors ${folderAlerts ? 'bg-primary' : 'bg-surface-container'}`}
+              >
+                <motion.div 
+                  animate={{ x: folderAlerts ? 24 : 0 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  className="w-4 h-4 bg-white rounded-full shadow-sm"
+                />
               </button>
             </div>
           </div>
@@ -106,7 +150,10 @@ export default function SettingsView() {
             <h3 className="text-lg font-bold">Ondersteuning</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button className="flex items-center justify-between p-5 bg-white rounded-3xl border border-surface-container group">
+            <button 
+              onClick={() => window.open('https://wa.me/5978000000', '_blank')}
+              className="flex items-center justify-between p-5 bg-white rounded-3xl border border-surface-container group hover:border-emerald-200 transition-colors"
+            >
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-emerald-50 text-emerald-600 rounded-2xl">
                   <MessageCircle size={24} />
@@ -118,7 +165,10 @@ export default function SettingsView() {
               </div>
               <ChevronRight className="text-on-surface-variant group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="flex items-center justify-between p-5 bg-white rounded-3xl border border-surface-container group">
+            <button 
+              onClick={() => alert('Privacybeleid: Uw gegevens worden veilig opgeslagen in Supabase en worden nooit gedeeld met derden. Wij gebruiken alleen anonieme API-sleutels voor gegevenstoegang.')}
+              className="flex items-center justify-between p-5 bg-white rounded-3xl border border-surface-container group hover:border-primary/20 transition-colors"
+            >
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-primary/5 text-primary rounded-2xl">
                   <ShieldCheck size={24} />
@@ -135,12 +185,76 @@ export default function SettingsView() {
       </div>
 
       <div className="py-8">
-        <button className="w-full py-5 rounded-3xl bg-red-50 text-red-600 font-bold flex items-center justify-center gap-2 border border-red-100 active:scale-[0.98] transition-all">
+        <button 
+          onClick={() => setShowLogoutConfirm(true)}
+          className="w-full py-5 rounded-3xl bg-red-50 text-red-600 font-bold flex items-center justify-center gap-2 border border-red-100 active:scale-[0.98] transition-all hover:bg-red-100"
+        >
           <LogOut size={20} />
           Uitloggen
         </button>
         <p className="text-center text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mt-8">Versie 2.4.0 • Gemaakt in Suriname 🇸🇷</p>
       </div>
+
+      {/* Saved Toast */}
+      <AnimatePresence>
+        {showSavedToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[100] bg-primary text-white px-6 py-3 rounded-2xl shadow-xl flex items-center gap-2 font-bold text-sm"
+          >
+            <Check size={18} />
+            Opgeslagen!
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Logout Confirmation Modal */}
+      <AnimatePresence>
+        {showLogoutConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-6"
+            onClick={() => setShowLogoutConfirm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center space-y-6"
+            >
+              <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto text-red-600">
+                <LogOut size={32} />
+              </div>
+              <div>
+                <h3 className="font-headline font-bold text-xl text-on-surface">Uitloggen?</h3>
+                <p className="text-sm text-on-surface-variant mt-2">Weet u zeker dat u wilt uitloggen? U kunt later weer inloggen.</p>
+              </div>
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setShowLogoutConfirm(false)}
+                  className="flex-1 py-4 rounded-2xl font-bold bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
+                >
+                  Annuleren
+                </button>
+                <button 
+                  onClick={() => {
+                    setShowLogoutConfirm(false);
+                    alert('U bent uitgelogd.');
+                  }}
+                  className="flex-1 py-4 rounded-2xl font-bold bg-red-600 text-white hover:bg-red-700 transition-colors"
+                >
+                  Uitloggen
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

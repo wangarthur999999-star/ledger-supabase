@@ -17,10 +17,12 @@ import { TabId } from "./types";
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabId>('dashboard');
 
+  const handleTabChange = (id: TabId) => setActiveTab(id);
+
   const renderView = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <DashboardView />;
+        return <DashboardView onTabChange={handleTabChange} />;
       case 'rates':
         return <RatesView />;
       case 'prices':
@@ -30,13 +32,13 @@ export default function App() {
       case 'settings':
         return <SettingsView />;
       default:
-        return <DashboardView />;
+        return <DashboardView onTabChange={handleTabChange} />;
     }
   };
 
   return (
     <div className="min-h-screen bg-surface selection:bg-primary/10 overflow-x-hidden">
-      <TopAppBar activeTab={activeTab} />
+      <TopAppBar activeTab={activeTab} onTabChange={handleTabChange} />
       
       <main className="max-w-4xl mx-auto px-6 pt-28 pb-40">
         <AnimatePresence mode="wait">
@@ -54,7 +56,7 @@ export default function App() {
 
       <BottomNavBar 
         activeTab={activeTab} 
-        onTabChange={(id) => setActiveTab(id)} 
+        onTabChange={handleTabChange} 
       />
     </div>
   );

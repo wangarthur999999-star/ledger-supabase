@@ -5,8 +5,13 @@ import Converter from "../components/Converter";
 import FolderCarousel from "../components/FolderCarousel";
 import { ExchangeRate } from "../types";
 import { fetchExchangeRates } from "../api/rates";
+import { TabId } from "../types";
 
-export default function DashboardView() {
+interface DashboardViewProps {
+  onTabChange: (id: TabId) => void;
+}
+
+export default function DashboardView({ onTabChange }: DashboardViewProps) {
   const [rates, setRates] = useState<ExchangeRate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -45,7 +50,7 @@ export default function DashboardView() {
       )}
 
       <Converter />
-      <FolderCarousel />
+      <FolderCarousel onTabChange={onTabChange} />
     </div>
   );
 }

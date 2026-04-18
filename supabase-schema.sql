@@ -70,3 +70,22 @@ INSERT INTO folders (id, name, validity, image, sort_order) VALUES
 INSERT INTO exchange_rates (pair, full_name, official_buy, official_sell, street_buy, street_sell, change, symbol) VALUES
   ('USD / SRD', 'Amerikaanse Dollar', 38.15, 38.55, 38.90, 39.45, 0.25, '$'),
   ('EUR / SRD', 'Europese Euro', 41.20, 41.60, 42.05, 42.60, -0.12, '€');
+
+-- 3. User Profiles Table
+CREATE TABLE user_profiles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  display_name TEXT NOT NULL DEFAULT 'Gebruiker',
+  email TEXT DEFAULT '',
+  phone TEXT DEFAULT '',
+  avatar_url TEXT DEFAULT '',
+  language TEXT DEFAULT 'NL',
+  dark_mode BOOLEAN DEFAULT false,
+  rate_alerts BOOLEAN DEFAULT true,
+  folder_alerts BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Seed default profile
+INSERT INTO user_profiles (id, display_name, email, phone, avatar_url) VALUES
+  ('99999999-9999-9999-9999-999999999999', 'Arthur Wang', 'arthur@example.com', '+597 8000000', 'https://lh3.googleusercontent.com/aida-public/AB6AXuCI6Pd1nnoofvkgxmCx5cKIlNJsQRbdZ94z8hnJP2GCJ_4w_R3NDHdwz2zDVp0WVN3io5mThp1C3v0mNwKtteCw8a85uQcF-AkqJrX2xkh6-mVa12JrGBe4fwR-8pyqImrjA_xr21H0pOVNJLBwq6GGU4hDFNqs6MWw2xJCa7xNsQRJGVUsM093K8xjU1g-800zeebvaGvoL7ElTWR6DdRCXZ0BLwSoNWhjuz8fAn-xoHGIZRxYMZ4XjfxiVPKINKc-svdM0KDPPM33');

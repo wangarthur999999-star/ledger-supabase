@@ -13,9 +13,22 @@ import PricesView from "./views/PricesView";
 import FoldersView from "./views/FoldersView";
 import SettingsView from "./views/SettingsView";
 import { TabId } from "./types";
+import { fetchProfile } from "./api/profile";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabId>('dashboard');
+  const [language, setLanguage] = useState<'NL' | 'EN'>('NL');
+
+  useEffect(() => {
+    // Sync language from profile on load
+    const syncProfile = async () => {
+      const profile = await fetchProfile();
+      if (profile) {
+        setLanguage(profile.language as 'NL' | 'EN');
+      }
+    };
+    syncProfile();
+  }, []);
 
   const handleTabChange = (id: TabId) => setActiveTab(id);
 
@@ -37,17 +50,21 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-surface selection:bg-primary/10 overflow-x-hidden">
-      <TopAppBar activeTab={activeTab} onTabChange={handleTabChange} />
+    <div className="min-h-screen bg-surface selection:bg-primary/10 overflow-x-hidden flex flex-col">
+      <TopAppBar activeTab={activeTab} onTabChange={handleTabChange} language={language} />
       
-      <main className="max-w-4xl mx-auto px-6 pt-28 pb-40">
-        <AnimatePresence mode="wait">
+      <main className="flex-1 max-w-4xl mx-auto w-full px-6 pt-28 pb-40">
+        <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ 
+              duration: 0.2, 
+              ease: [0.4, 0, 0.2, 1] 
+            }}
+            className="w-full"
           >
             {renderView()}
           </motion.div>

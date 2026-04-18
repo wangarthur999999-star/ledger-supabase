@@ -6,13 +6,15 @@ import { TabId } from "../types";
 interface TopAppBarProps {
   activeTab: TabId;
   onTabChange: (id: TabId) => void;
+  language: 'NL' | 'EN';
 }
 
-export default function TopAppBar({ activeTab, onTabChange }: TopAppBarProps) {
+export default function TopAppBar({ activeTab, onTabChange, language }: TopAppBarProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const today = new Date();
+  const locale = language === 'NL' ? 'nl-NL' : 'en-US';
   const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long' };
-  const dateString = today.toLocaleDateString('nl-NL', options);
+  const dateString = today.toLocaleDateString(locale, options);
 
   const getTitle = () => {
     switch (activeTab) {
@@ -60,7 +62,7 @@ export default function TopAppBar({ activeTab, onTabChange }: TopAppBarProps) {
             </h1>
             {activeTab === 'dashboard' && (
               <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest opacity-60">
-                Update: {today.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}
+                Update: {today.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
               </p>
             )}
           </div>

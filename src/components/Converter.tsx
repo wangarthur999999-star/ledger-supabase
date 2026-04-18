@@ -1,14 +1,40 @@
-import { useState, useMemo } from "react";
-import { ArrowUpDown, Info, Calculator, TrendingUp } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowUpDown, Info, Calculator, TrendingUp, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { fetchExchangeRates } from "../api/rates";
 
 export default function Converter() {
   const [amount, setAmount] = useState<string>("100");
   const [fromUSD, setFromUSD] = useState(true);
-  const rate = 38.90; // Street Buy rate as default
+  const [rate, setRate] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadRate = async () => {
+      setIsLoading(true);
+      const rates = await fetchExchangeRates();
+      const usdRate = rates.find(r => r.pair.includes('USD'));
+      if (usdRate) {
+        setRate(usdRate.street.buy);
+      }
+      setIsLoading(false);
+    };
+    loadRate();
+  }, []);
 
   const numericAmount = parseFloat(amount) || 0;
   const result = fromUSD ? numericAmount * rate : numericAmount / rate;
+
+  if (isLoading) {
+    return (
+      <section className="bg-white rounded-[32px] p-8 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.08)] border border-surface-container flex items-center justify-center py-16">
+        <div className="flex flex-col items-center gap-4 text-primary">
+          <Loader2 size={32} className="animate-spin" />
+          <p className="font-bold text-sm">Wisselkoers laden...</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-white rounded-[32px] p-8 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.08)] border border-surface-container relative overflow-hidden group">

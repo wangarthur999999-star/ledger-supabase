@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "motion/react";
 import TopAppBar from "./components/TopAppBar";
 import BottomNavBar from "./components/BottomNavBar";
 import DashboardView from "./views/DashboardView";
+import RatesView from "./views/RatesView";
 import PricesView from "./views/PricesView";
 import FoldersView from "./views/FoldersView";
 import SettingsView from "./views/SettingsView";
@@ -20,6 +21,8 @@ export default function App() {
     switch (activeTab) {
       case 'dashboard':
         return <DashboardView />;
+      case 'rates':
+        return <RatesView />;
       case 'prices':
         return <PricesView />;
       case 'folders':

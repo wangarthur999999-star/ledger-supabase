@@ -1,39 +1,40 @@
 // scripts/update_rates.js
 //
-// 在 GitHub Actions 中定时运行：
-//   1. 抓取 CBVS Daily Publications 页面
-//   2. 解析 USD / EUR 的官方买/卖价
-//   3. 推送到 Supabase 的 exchange_rates 表
+// 在 GitHub Actions 中定时运行。
 //
-// 设计决策:
-//   - 解析逻辑抽离到 ./lib/cbvs_parser.js，和 Supabase Edge Function 共享逻辑。
-//   - 街头价 (street_buy / street_sell) 目前以官方价 +2.5% 估算, 因为 CBVS 不提供。
-//     生产上应从 cme.sr 这类民间 cambio 网站抓取, 这里标了 TODO。
-//   - 失败策略: 抓取或解析失败时进程以非 0 退出码退出 (CI 会记录失败并报警),
-//     而不是用假数据悄悄更新数据库 (这是之前版本的 bug)。
-//   - 当只有一种货币解析成功时, 另一种保持不更新, 不污染数据。
+// 抓取两个数据源:
+//   1. CBVS "Daily Publications" —— 官方汇率 (official_buy / official_sell)
+//   2. Finabank "Koersen / Rates" —— 商业银行汇率，用作街头价代理 (street_buy / street_sell)
+//
+// 然后把两边合并后写入 Supabase 的 exchange_rates 表。
+//
+// 容错设计:
+//   - CBVS 失败  -> 整个脚本失败退出 (official 是核心数据)
+//   - Finabank 失败 -> 警告 + 退回旧估算 (官方价 × (1 + STREET_PREMIUM_PCT))，不阻塞官方价更新
+//   - CBVS 只有 USD 没 EUR -> 只更新 USD，EUR 保持不变
+//   - 同理 Finabank 缺一种时
 //
 // 环境变量:
 //   SUPABASE_URL                必填
 //   SUPABASE_SERVICE_ROLE_KEY   必填
-//   CBVS_URL                    可选，默认 CBVS_DAILY_URL, 覆盖用于测试
+//   CBVS_URL                    可选，覆盖默认 CBVS URL (测试用)
+//   FINABANK_URL                可选，覆盖默认 Finabank URL (测试用)
+//   STREET_PREMIUM_PCT          可选，Finabank 抓取失败时的回退溢价 (默认 2.5)
 //   DRY_RUN                     "1" 时只打印不写库
 
 import { createClient } from '@supabase/supabase-js';
 import axios from 'axios';
 
 import { CBVS_DAILY_URL, parseCbvsDaily } from './lib/cbvs_parser.js';
+import { FINABANK_URL, parseFinabankRates } from './lib/finabank_parser.js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const TARGET_URL = process.env.CBVS_URL || CBVS_DAILY_URL;
+const CBVS_TARGET = process.env.CBVS_URL || CBVS_DAILY_URL;
+const FINABANK_TARGET = process.env.FINABANK_URL || FINABANK_URL;
 const DRY_RUN = process.env.DRY_RUN === '1';
 
-// 街头价相对官方价的溢价。
-// 当前是估算值（CBVS 不提供民间 cambio 报价，cme.sr 有 bot 防护无法稳定爬取）。
-// 通过环境变量 STREET_PREMIUM_PCT 覆盖 (单位: 百分比, 例: "2.5" 表示 +2.5%)。
-// TODO: 对接可靠的民间 cambio 数据源后，移除此估算。
-const STREET_PREMIUM = (() => {
+const STREET_PREMIUM_FALLBACK = (() => {
   const raw = process.env.STREET_PREMIUM_PCT;
   if (raw == null || raw === '') return 0.025;
   const pct = parseFloat(raw);
@@ -70,14 +71,38 @@ function round3(n) {
   return Math.round(n * 1000) / 1000;
 }
 
-function buildRatePayload(pair, official, changeDefault) {
+/**
+ * 构造单一货币对 (USD/SRD 或 EUR/SRD) 的写库 payload。
+ *
+ * @param {string} pair            e.g. 'USD / SRD'
+ * @param {{buy, sell}} official   CBVS 抓到的官方买卖价 (必填)
+ * @param {{buy, sell} | null} street  Finabank 抓到的街头价 (可为 null, null 时用溢价回退)
+ * @param {number} changeDefault   当前 schema 要求的 change 列占位值
+ * @param {string[]} warnings      累积警告 (用于最后统一打印)
+ */
+function buildRatePayload(pair, official, street, changeDefault, warnings) {
+  let streetBuy, streetSell, source;
+  if (street) {
+    streetBuy = street.buy;
+    streetSell = street.sell;
+    source = 'finabank';
+  } else {
+    streetBuy = official.buy * (1 + STREET_PREMIUM_FALLBACK);
+    streetSell = official.sell * (1 + STREET_PREMIUM_FALLBACK);
+    source = `estimated (+${(STREET_PREMIUM_FALLBACK * 100).toFixed(1)}%)`;
+    warnings.push(
+      `${pair}: Finabank 数据缺失，街头价退回估算 (${source})`
+    );
+  }
+
   return {
     pair,
     official_buy: round3(official.buy),
     official_sell: round3(official.sell),
-    street_buy: round3(official.buy * (1 + STREET_PREMIUM)),
-    street_sell: round3(official.sell * (1 + STREET_PREMIUM)),
+    street_buy: round3(streetBuy),
+    street_sell: round3(streetSell),
     change: changeDefault,
+    _streetSource: source, // 仅用于日志，不写库
   };
 }
 
@@ -99,38 +124,85 @@ async function pushToSupabase(rate) {
   }
 }
 
+/**
+ * 温和地抓取第二数据源: 失败不抛出, 返回 null + 打印警告。
+ */
+async function tryFetchFinabank() {
+  try {
+    console.log(`🏦 从 ${FINABANK_TARGET} 抓取 Finabank 汇率...`);
+    const html = await fetchHtml(FINABANK_TARGET);
+    const { usd, eur } = parseFinabankRates(html);
+    if (!usd && !eur) {
+      console.warn('⚠️ Finabank 页面解析到 0 条数据 (结构可能已改)，退回估算溢价');
+      return { usd: null, eur: null };
+    }
+    console.log(`✅ Finabank 解析: USD=${usd ? `${usd.buy}/${usd.sell}` : 'n/a'}, EUR=${eur ? `${eur.buy}/${eur.sell}` : 'n/a'}`);
+    return { usd, eur };
+  } catch (err) {
+    console.warn(`⚠️ Finabank 抓取失败 (${err.message})，街头价退回估算`);
+    return { usd: null, eur: null };
+  }
+}
+
 async function main() {
   requireEnv();
 
-  console.log(`🚀 从 ${TARGET_URL} 抓取 CBVS 汇率...`);
-  const html = await fetchHtml(TARGET_URL);
-  const { usd, eur } = parseCbvsDaily(html);
-
-  if (!usd && !eur) {
+  // ---------- Step 1: CBVS (官方价，必须成功) ----------
+  console.log(`🚀 从 ${CBVS_TARGET} 抓取 CBVS 汇率...`);
+  const cbvsHtml = await fetchHtml(CBVS_TARGET);
+  const cbvs = parseCbvsDaily(cbvsHtml);
+  if (!cbvs.usd && !cbvs.eur) {
     throw new Error(
       'CBVS 页面解析失败: 未找到任何货币数据。页面结构可能已改变，请检查 parser。'
     );
   }
+  console.log(`✅ CBVS 解析: USD=${cbvs.usd ? `${cbvs.usd.buy}/${cbvs.usd.sell}` : 'n/a'}, EUR=${cbvs.eur ? `${cbvs.eur.buy}/${cbvs.eur.sell}` : 'n/a'}`);
 
+  // ---------- Step 2: Finabank (街头价，失败可降级) ----------
+  const finabank = await tryFetchFinabank();
+
+  // ---------- Step 3: 组装 payload ----------
+  const warnings = [];
   const rates = [];
-  if (usd) rates.push(buildRatePayload('USD / SRD', usd, 0.02));
-  else console.warn('⚠️ 未解析到 USD，本次跳过 USD 更新');
 
-  if (eur) rates.push(buildRatePayload('EUR / SRD', eur, -0.01));
-  else console.warn('⚠️ 未解析到 EUR，本次跳过 EUR 更新');
+  if (cbvs.usd) {
+    rates.push(buildRatePayload('USD / SRD', cbvs.usd, finabank.usd, 0.02, warnings));
+  } else {
+    warnings.push('USD: CBVS 未返回官方价，本次跳过更新');
+  }
+
+  if (cbvs.eur) {
+    rates.push(buildRatePayload('EUR / SRD', cbvs.eur, finabank.eur, -0.01, warnings));
+  } else {
+    warnings.push('EUR: CBVS 未返回官方价，本次跳过更新');
+  }
 
   console.log('📊 解析结果:');
-  console.table(rates);
+  console.table(
+    rates.map((r) => ({
+      pair: r.pair,
+      official_buy: r.official_buy,
+      official_sell: r.official_sell,
+      street_buy: r.street_buy,
+      street_sell: r.street_sell,
+      street_source: r._streetSource,
+    }))
+  );
+  if (warnings.length) {
+    console.warn('⚠️ 警告:');
+    for (const w of warnings) console.warn(`   - ${w}`);
+  }
 
   if (DRY_RUN) {
     console.log('🧪 DRY_RUN=1，跳过数据库写入');
     return;
   }
 
+  // ---------- Step 4: 写库 ----------
   for (const rate of rates) {
     await pushToSupabase(rate);
     console.log(
-      `✅ ${rate.pair} 已写入 (official ${rate.official_buy} / ${rate.official_sell})`
+      `✅ ${rate.pair} 已写入 (official ${rate.official_buy}/${rate.official_sell}, street ${rate.street_buy}/${rate.street_sell} [${rate._streetSource}])`
     );
   }
 }

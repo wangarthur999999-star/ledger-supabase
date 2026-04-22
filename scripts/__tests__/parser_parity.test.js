@@ -94,3 +94,65 @@ test('Node 版与 Deno 版 parseCbvsDaily 在真实样本上产生相同结果',
   assert.equal(nr.eur.buy, 42.624);
   assert.equal(nr.eur.sell, 43.35);
 });
+
+// -------------------- Finabank parity --------------------
+
+const finabankFixture = readFileSync(
+  resolve(__dirname, 'fixtures/finabank_rates_2026-04-22.html'),
+  'utf-8'
+);
+
+async function loadDenoFinabankParser() {
+  const tsPath = resolve(
+    __dirname,
+    '..',
+    '..',
+    'supabase',
+    'functions',
+    'update-rates',
+    'finabank_parser.ts'
+  );
+  let tsSrc = readFileSync(tsPath, 'utf-8');
+  // cheerio: esm.sh -> 本地
+  tsSrc = tsSrc.replace(
+    /from\s+['"]https:\/\/esm\.sh\/cheerio[^'"]*['"]/g,
+    `from 'cheerio'`
+  );
+  // 相对 import './cbvs_parser.ts' -> 指向 Node 版的 cbvs_parser.js
+  // (因为 Node 版和 Deno 版 cbvs_parser 已由单独的 parity 测试保证等价)
+  const nodeCbvsPath = pathToFileURL(
+    resolve(__dirname, '..', 'lib', 'cbvs_parser.js')
+  ).href;
+  tsSrc = tsSrc.replace(
+    /from\s+['"]\.\/cbvs_parser\.ts['"]/g,
+    `from '${nodeCbvsPath}'`
+  );
+
+  const out = ts.transpileModule(tsSrc, {
+    compilerOptions: {
+      module: ts.ModuleKind.ESNext,
+      target: ts.ScriptTarget.ES2022,
+      esModuleInterop: true,
+    },
+  });
+
+  const outDir = mkdtempSync(join(__dirname, '.parity-'));
+  const outPath = join(outDir, 'finabank_parser.mjs');
+  writeFileSync(outPath, out.outputText, 'utf-8');
+  return await import(pathToFileURL(outPath).href);
+}
+
+test('Node 版与 Deno 版 parseFinabankRates 在真实样本上产生相同结果', async () => {
+  const node = await import('../lib/finabank_parser.js');
+  const deno = await loadDenoFinabankParser();
+
+  const nr = node.parseFinabankRates(finabankFixture);
+  const dr = deno.parseFinabankRates(finabankFixture);
+  assert.deepEqual(dr, nr, 'parseFinabankRates 两实现应该输出相同对象');
+
+  // 同时断言具体数值防止两边同时错成相同错误值
+  assert.equal(nr.usd.buy, 37.223);
+  assert.equal(nr.usd.sell, 37.753);
+  assert.equal(nr.eur.buy, 43.699);
+  assert.equal(nr.eur.sell, 44.394);
+});

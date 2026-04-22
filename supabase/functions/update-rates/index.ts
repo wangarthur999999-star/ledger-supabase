@@ -1,10 +1,11 @@
 // supabase/functions/update-rates/index.ts
 //
-// Supabase Edge Function: 爬取 CBVS 并更新 exchange_rates 表。
-// 可被 cron (pg_cron / scheduled function) 或手动 HTTP 调用触发。
+// Supabase Edge Function: 爬取 CBVS + Finabank 并更新 exchange_rates 表。
 //
-// 与 scripts/update_rates.js 行为对齐, 共享 ./cbvs_parser.ts 解析逻辑。
-// 关键修复: 解析失败时返回 5xx (不再因为 catch 吞掉而写入假数据)。
+// 容错设计 (与 scripts/update_rates.js 对齐):
+//   - CBVS 失败 -> 返回 500
+//   - Finabank 失败 -> 记录警告 + 街头价退回估算溢价，仍 200
+//   - 部分货币缺失 -> 跳过该货币的更新
 
 // @ts-ignore Deno 远程 import
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -12,6 +13,7 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 import { CBVS_DAILY_URL, parseCbvsDaily } from './cbvs_parser.ts';
+import { FINABANK_URL, parseFinabankRates } from './finabank_parser.ts';
 
 // @ts-ignore Deno 全局
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -19,7 +21,7 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 // @ts-ignore Deno 全局
 const STREET_PREMIUM_PCT = parseFloat(Deno.env.get('STREET_PREMIUM_PCT') || '2.5');
-const STREET_PREMIUM =
+const STREET_PREMIUM_FALLBACK =
   Number.isFinite(STREET_PREMIUM_PCT) &&
   STREET_PREMIUM_PCT >= 0 &&
   STREET_PREMIUM_PCT <= 50
@@ -39,49 +41,89 @@ interface RatePayload {
   street_buy: number;
   street_sell: number;
   change: number;
+  street_source: string; // 仅用于返回给调用方, 不会写库
 }
 
 function buildRatePayload(
   pair: string,
   official: { buy: number; sell: number },
+  street: { buy: number; sell: number } | null,
   changeDefault: number
 ): RatePayload {
+  let streetBuy: number, streetSell: number, streetSource: string;
+  if (street) {
+    streetBuy = street.buy;
+    streetSell = street.sell;
+    streetSource = 'finabank';
+  } else {
+    streetBuy = official.buy * (1 + STREET_PREMIUM_FALLBACK);
+    streetSell = official.sell * (1 + STREET_PREMIUM_FALLBACK);
+    streetSource = `estimated_${(STREET_PREMIUM_FALLBACK * 100).toFixed(1)}pct`;
+  }
   return {
     pair,
     official_buy: round3(official.buy),
     official_sell: round3(official.sell),
-    street_buy: round3(official.buy * (1 + STREET_PREMIUM)),
-    street_sell: round3(official.sell * (1 + STREET_PREMIUM)),
+    street_buy: round3(streetBuy),
+    street_sell: round3(streetSell),
     change: changeDefault,
+    street_source: streetSource,
   };
+}
+
+async function fetchText(url: string): Promise<string> {
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      Accept: 'text/html,application/xhtml+xml',
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`fetch ${url} failed: ${res.status} ${res.statusText}`);
+  }
+  return await res.text();
+}
+
+async function tryFinabank(): Promise<{ usd: any; eur: any; error?: string }> {
+  try {
+    const html = await fetchText(FINABANK_URL);
+    const parsed = parseFinabankRates(html);
+    if (!parsed.usd && !parsed.eur) {
+      return { usd: null, eur: null, error: 'parsed 0 rows' };
+    }
+    return parsed;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { usd: null, eur: null, error: msg };
+  }
 }
 
 serve(async (_req: Request) => {
   try {
     console.log(`🚀 fetching CBVS from ${CBVS_DAILY_URL}`);
+    const cbvsHtml = await fetchText(CBVS_DAILY_URL);
+    const cbvs = parseCbvsDaily(cbvsHtml);
 
-    const res = await fetch(CBVS_DAILY_URL, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        Accept: 'text/html,application/xhtml+xml',
-      },
-    });
-    if (!res.ok) {
-      throw new Error(`CBVS fetch failed: ${res.status} ${res.statusText}`);
-    }
-    const html = await res.text();
-    const { usd, eur } = parseCbvsDaily(html);
-
-    if (!usd && !eur) {
+    if (!cbvs.usd && !cbvs.eur) {
       throw new Error(
         'CBVS parsing failed: neither USD nor EUR found — page layout may have changed.'
       );
     }
 
+    console.log(`🏦 fetching Finabank from ${FINABANK_URL}`);
+    const finabank = await tryFinabank();
+    if (finabank.error) {
+      console.warn(`⚠️ Finabank source unavailable (${finabank.error}); using estimated premium`);
+    }
+
     const rates: RatePayload[] = [];
-    if (usd) rates.push(buildRatePayload('USD / SRD', usd, 0.02));
-    if (eur) rates.push(buildRatePayload('EUR / SRD', eur, -0.01));
+    if (cbvs.usd) {
+      rates.push(buildRatePayload('USD / SRD', cbvs.usd, finabank.usd, 0.02));
+    }
+    if (cbvs.eur) {
+      rates.push(buildRatePayload('EUR / SRD', cbvs.eur, finabank.eur, -0.01));
+    }
 
     const results: { pair: string; ok: boolean; error?: string }[] = [];
     for (const rate of rates) {
@@ -104,9 +146,10 @@ serve(async (_req: Request) => {
         success: allOk,
         rates,
         results,
+        finabank_error: finabank.error,
         skipped: {
-          usd: !usd ? 'not found in HTML' : undefined,
-          eur: !eur ? 'not found in HTML' : undefined,
+          usd: !cbvs.usd ? 'not found in CBVS HTML' : undefined,
+          eur: !cbvs.eur ? 'not found in CBVS HTML' : undefined,
         },
       }),
       {

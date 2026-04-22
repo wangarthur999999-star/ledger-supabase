@@ -1,0 +1,32 @@
+name: Update Exchange Rates
+
+on:
+  schedule:
+    # 每天 UTC 19:00 = 苏里南当地 16:00（CBVS 15:00 发布后留 1 小时缓冲）
+    - cron: '0 19 * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests (sanity check)
+        run: node --test 'scripts/__tests__/*.test.js'
+
+      - name: Update rates
+        env:
+          SUPABASE_URL: ${{ secrets.URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.KEY }}
+        run: node scripts/update_rates.js

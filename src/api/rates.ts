@@ -17,6 +17,7 @@ export async function fetchExchangeRates(): Promise<ExchangeRate[]> {
     official: { buy: rate.official_buy, sell: rate.official_sell },
     street: { buy: rate.street_buy, sell: rate.street_sell },
     change: rate.change,
-    symbol: rate.symbol
+    symbol: rate.symbol,
+    updatedAt: rate.updated_at,
   }));
 }

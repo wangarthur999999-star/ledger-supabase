@@ -6,6 +6,7 @@ import FolderCarousel from "../components/FolderCarousel";
 import { ExchangeRate } from "../types";
 import { fetchExchangeRates } from "../api/rates";
 import { TabId } from "../types";
+import { formatRelativeTime } from "../lib/formatTime";
 
 interface DashboardViewProps {
   onTabChange: (id: TabId) => void;
@@ -34,6 +35,14 @@ export default function DashboardView({ onTabChange }: DashboardViewProps) {
         <p className="text-on-surface-variant font-medium text-lg">
           Real-time financiële inzichten voor Suriname.
         </p>
+        {!isLoading && rates.length > 0 && (() => {
+          const { text, isStale } = formatRelativeTime(rates[0].updatedAt);
+          return (
+            <p className={`text-xs font-bold mt-1 ${isStale ? 'text-red-600' : 'text-on-surface-variant/70'}`}>
+              {isStale ? '⚠️ ' : ''}Laatst bijgewerkt: {text}
+            </p>
+          );
+        })()}
       </section>
 
       {isLoading ? (

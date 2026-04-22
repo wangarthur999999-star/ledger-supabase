@@ -11,6 +11,7 @@ export interface ExchangeRate {
   };
   change: number;
   symbol: string;
+  updatedAt?: string;
 }
 
 export interface Folder {

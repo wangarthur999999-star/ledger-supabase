@@ -3,6 +3,7 @@ import { Loader2, TrendingUp, TrendingDown, DollarSign, Euro, ArrowUpDown } from
 import { motion } from "motion/react";
 import { ExchangeRate } from "../types";
 import { fetchExchangeRates } from "../api/rates";
+import { formatRelativeTime } from "../lib/formatTime";
 
 export default function RatesView() {
   const [rates, setRates] = useState<ExchangeRate[]>([]);
@@ -27,6 +28,14 @@ export default function RatesView() {
         <p className="text-on-surface-variant font-medium text-lg">
           Alle koersen op één plek – officieel & straat.
         </p>
+        {!isLoading && rates.length > 0 && (() => {
+          const { text, isStale } = formatRelativeTime(rates[0].updatedAt);
+          return (
+            <p className={`text-xs font-bold mt-1 ${isStale ? 'text-red-600' : 'text-on-surface-variant/70'}`}>
+              {isStale ? '⚠️ ' : ''}Laatst bijgewerkt: {text}
+            </p>
+          );
+        })()}
       </section>
 
       {isLoading ? (

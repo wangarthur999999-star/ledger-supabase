@@ -22,6 +22,12 @@ export default function FolderCarousel({ onTabChange }: FolderCarouselProps) {
     load();
   }, []);
 
+  // 数据为空且已加载完成时不显示本区域 (Folders 功能还没上线)。
+  // Loading 时仍然渲染,避免加载完成后 Dashboard 布局跳动。
+  if (!isLoading && folders.length === 0) {
+    return null;
+  }
+
   return (
     <section className="space-y-6">
       <div className="flex justify-between items-center px-1">

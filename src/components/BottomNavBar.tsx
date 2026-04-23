@@ -1,13 +1,14 @@
 import { LayoutGrid, TrendingUp, ShoppingBasket, BookOpen, Settings } from "lucide-react";
 import { motion } from "motion/react";
 import { TabId } from "../types";
+import { useSettings, TKey } from "../context/SettingsContext";
 
-const NAV_ITEMS: { id: TabId; label: string; icon: any }[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutGrid },
-  { id: 'rates', label: 'Koersen', icon: TrendingUp },
-  { id: 'prices', label: 'Prijzen', icon: ShoppingBasket },
-  { id: 'folders', label: 'Folders', icon: BookOpen },
-  { id: 'settings', label: 'Instellingen', icon: Settings },
+const NAV_ITEMS: { id: TabId; labelKey: TKey; icon: any }[] = [
+  { id: 'dashboard', labelKey: 'nav.dashboard', icon: LayoutGrid },
+  { id: 'rates', labelKey: 'nav.rates', icon: TrendingUp },
+  { id: 'prices', labelKey: 'nav.prices', icon: ShoppingBasket },
+  { id: 'folders', labelKey: 'nav.folders', icon: BookOpen },
+  { id: 'settings', labelKey: 'nav.settings', icon: Settings },
 ];
 
 interface BottomNavBarProps {
@@ -16,6 +17,7 @@ interface BottomNavBarProps {
 }
 
 export default function BottomNavBar({ activeTab, onTabChange }: BottomNavBarProps) {
+  const { t } = useSettings();
   return (
     <nav className="fixed bottom-0 left-0 w-full z-50 bg-white/90 backdrop-blur-2xl border-t border-surface-container shadow-[0_-12px_40px_-12px_rgba(0,0,0,0.15)] rounded-t-[32px]">
       <div className="flex justify-around items-center px-4 pt-4 pb-10 max-w-lg mx-auto">
@@ -32,7 +34,7 @@ export default function BottomNavBar({ activeTab, onTabChange }: BottomNavBarPro
                 <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
               </div>
               <span className={`text-[9px] font-black uppercase tracking-widest transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-60'}`}>
-                {item.label}
+                {t(item.labelKey)}
               </span>
               {isActive && (
                 <motion.div 

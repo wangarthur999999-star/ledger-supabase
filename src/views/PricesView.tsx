@@ -1,15 +1,17 @@
 import { Rocket, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
+import { useSettings } from "../context/SettingsContext";
 
 export default function PricesView() {
+  const { t } = useSettings();
   return (
     <div className="space-y-10">
       <section className="space-y-2">
         <h2 className="font-headline font-extrabold text-primary text-3xl tracking-tight leading-tight">
-          Prijsvergelijker
+          {t('prices.title')}
         </h2>
         <p className="text-on-surface-variant font-medium">
-          Vergelijk prijzen van dagelijkse boodschappen in één oogopslag.
+          {t('prices.subtitle')}
         </p>
       </section>
 
@@ -32,17 +34,16 @@ export default function PricesView() {
 
         <div className="space-y-3 max-w-md mx-auto">
           <h3 className="font-headline font-extrabold text-2xl text-on-surface tracking-tight">
-            Binnenkort beschikbaar
+            {t('prices.soonTitle')}
           </h3>
           <p className="text-on-surface-variant font-medium leading-relaxed">
-            Binnenkort kunnen winkels hun prijzen hier publiceren en kunt u
-            eenvoudig vergelijken waar u het beste kunt kopen.
+            {t('prices.soonBody')}
           </p>
         </div>
 
         <div className="pt-2">
           <span className="inline-block px-4 py-2 bg-primary/10 rounded-full text-xs font-black text-primary uppercase tracking-widest">
-            Wij werken eraan
+            {t('prices.workingPill')}
           </span>
         </div>
 

@@ -3,12 +3,14 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { Folder, TabId } from "../types";
 import { fetchFolders } from "../api/folders";
+import { useSettings } from "../context/SettingsContext";
 
 interface FolderCarouselProps {
   onTabChange: (id: TabId) => void;
 }
 
 export default function FolderCarousel({ onTabChange }: FolderCarouselProps) {
+  const { t } = useSettings();
   const [folders, setFolders] = useState<Folder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -31,12 +33,12 @@ export default function FolderCarousel({ onTabChange }: FolderCarouselProps) {
   return (
     <section className="space-y-6">
       <div className="flex justify-between items-center px-1">
-        <h3 className="font-headline font-bold text-2xl text-on-surface tracking-tight">Nieuwste Folders</h3>
+        <h3 className="font-headline font-bold text-2xl text-on-surface tracking-tight">{t('folders.carouselTitle')}</h3>
         <button 
           onClick={() => onTabChange('folders')}
           className="text-primary font-bold text-sm flex items-center gap-1 hover:gap-2 transition-all"
         >
-          Bekijk alles <ArrowRight size={16} />
+          {t('folders.carouselSeeAll')} <ArrowRight size={16} />
         </button>
       </div>
 

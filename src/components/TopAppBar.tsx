@@ -2,17 +2,17 @@ import { useState } from "react";
 import { Settings, RefreshCw, User } from "lucide-react";
 import { motion } from "motion/react";
 import { TabId } from "../types";
+import { useSettings } from "../context/SettingsContext";
 
 interface TopAppBarProps {
   activeTab: TabId;
   onTabChange: (id: TabId) => void;
-  language: 'NL' | 'EN';
 }
 
-export default function TopAppBar({ activeTab, onTabChange, language }: TopAppBarProps) {
+export default function TopAppBar({ activeTab, onTabChange }: TopAppBarProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const { t, locale } = useSettings();
   const today = new Date();
-  const locale = language === 'NL' ? 'nl-NL' : 'en-US';
   const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long' };
   const dateString = today.toLocaleDateString(locale, options);
 
@@ -21,15 +21,15 @@ export default function TopAppBar({ activeTab, onTabChange, language }: TopAppBa
       case 'dashboard':
         return dateString.charAt(0).toUpperCase() + dateString.slice(1);
       case 'prices':
-        return 'Prijsvergelijker';
+        return t('pageTitle.prices');
       case 'folders':
-        return 'Folders';
+        return t('pageTitle.folders');
       case 'settings':
-        return 'Instellingen';
+        return t('pageTitle.settings');
       case 'rates':
-        return 'Wisselkoersen';
+        return t('pageTitle.rates');
       default:
-        return 'Sovereign Ledger';
+        return t('pageTitle.default');
     }
   };
 
@@ -62,7 +62,7 @@ export default function TopAppBar({ activeTab, onTabChange, language }: TopAppBa
             </h1>
             {activeTab === 'dashboard' && (
               <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest opacity-60">
-                Update: {today.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
+                {t('topbar.updatePrefix')}{today.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
               </p>
             )}
           </div>
@@ -75,7 +75,7 @@ export default function TopAppBar({ activeTab, onTabChange, language }: TopAppBa
             animate={isRefreshing ? { rotate: 360 } : {}}
             transition={{ duration: 0.6 }}
             className="p-2.5 rounded-full hover:bg-surface-container transition-colors text-on-surface-variant"
-            title="Vernieuwen"
+            title={t('topbar.refresh')}
           >
             <RefreshCw size={20} />
           </motion.button>
@@ -83,7 +83,7 @@ export default function TopAppBar({ activeTab, onTabChange, language }: TopAppBa
             whileTap={{ scale: 0.9 }}
             onClick={() => onTabChange('settings')}
             className={`p-2.5 rounded-full hover:bg-surface-container transition-colors ${activeTab === 'settings' ? 'text-primary bg-primary/10' : 'text-on-surface-variant'}`}
-            title="Instellingen"
+            title={t('topbar.settings')}
           >
             <Settings size={20} />
           </motion.button>

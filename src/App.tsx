@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import TopAppBar from "./components/TopAppBar";
 import BottomNavBar from "./components/BottomNavBar";
@@ -13,22 +13,9 @@ import PricesView from "./views/PricesView";
 import FoldersView from "./views/FoldersView";
 import SettingsView from "./views/SettingsView";
 import { TabId } from "./types";
-import { fetchProfile } from "./api/profile";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabId>('dashboard');
-  const [language, setLanguage] = useState<'NL' | 'EN'>('NL');
-
-  useEffect(() => {
-    // Sync language from profile on load
-    const syncProfile = async () => {
-      const profile = await fetchProfile();
-      if (profile) {
-        setLanguage(profile.language as 'NL' | 'EN');
-      }
-    };
-    syncProfile();
-  }, []);
 
   const handleTabChange = (id: TabId) => setActiveTab(id);
 
@@ -51,7 +38,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-surface selection:bg-primary/10 overflow-x-hidden flex flex-col">
-      <TopAppBar activeTab={activeTab} onTabChange={handleTabChange} language={language} />
+      <TopAppBar activeTab={activeTab} onTabChange={handleTabChange} />
       
       <main className="flex-1 max-w-4xl mx-auto w-full px-6 pt-28 pb-40">
         <AnimatePresence mode="wait" initial={false}>

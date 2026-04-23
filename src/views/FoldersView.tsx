@@ -1,15 +1,17 @@
 import { Rocket, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
+import { useSettings } from "../context/SettingsContext";
 
 export default function FoldersView() {
+  const { t } = useSettings();
   return (
     <div className="space-y-10">
       <section className="space-y-2">
         <h2 className="font-headline font-extrabold text-primary text-4xl tracking-tight leading-tight">
-          Folders
+          {t('folders.title')}
         </h2>
         <p className="font-body text-secondary text-lg">
-          Ontdek de nieuwste aanbiedingen van uw favoriete winkels.
+          {t('folders.subtitle')}
         </p>
       </section>
 
@@ -32,17 +34,16 @@ export default function FoldersView() {
 
         <div className="space-y-3 max-w-md mx-auto">
           <h3 className="font-headline font-extrabold text-2xl text-on-surface tracking-tight">
-            Binnenkort beschikbaar
+            {t('folders.soonTitle')}
           </h3>
           <p className="text-on-surface-variant font-medium leading-relaxed">
-            Binnenkort kunnen lokale winkels hier hun folders en aanbiedingen
-            delen. Houd deze pagina in de gaten!
+            {t('folders.soonBody')}
           </p>
         </div>
 
         <div className="pt-2">
           <span className="inline-block px-4 py-2 bg-primary/10 rounded-full text-xs font-black text-primary uppercase tracking-widest">
-            Wij werken eraan
+            {t('folders.workingPill')}
           </span>
         </div>
 

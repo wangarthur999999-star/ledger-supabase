@@ -1,6 +1,7 @@
 import { TrendingUp, TrendingDown, DollarSign, Euro } from "lucide-react";
 import { motion } from "motion/react";
 import { ExchangeRate } from "../types";
+import { useSettings } from "../context/SettingsContext";
 
 interface CurrencyCardProps {
   rate: ExchangeRate;
@@ -8,6 +9,7 @@ interface CurrencyCardProps {
 }
 
 export default function CurrencyCard({ rate }: CurrencyCardProps) {
+  const { t, locale } = useSettings();
   const isUp = rate.change >= 0;
   const Icon = rate.pair.includes('USD') ? DollarSign : Euro;
 
@@ -36,15 +38,15 @@ export default function CurrencyCard({ rate }: CurrencyCardProps) {
 
       <div className="grid grid-cols-2 gap-8 relative z-10">
         <div className="space-y-1">
-          <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Official (CBvS)</p>
+          <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">{t('card.official')}</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-headline font-extrabold text-primary">{rate.official.buy.toLocaleString('nl-NL', { minimumFractionDigits: 2 })}</span>
+            <span className="text-2xl font-headline font-extrabold text-primary">{rate.official.buy.toLocaleString(locale, { minimumFractionDigits: 2 })}</span>
           </div>
         </div>
         <div className="space-y-1">
-          <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Street (Cambio)</p>
+          <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">{t('card.street')}</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-headline font-extrabold text-on-surface">{rate.street.buy.toLocaleString('nl-NL', { minimumFractionDigits: 2 })}</span>
+            <span className="text-2xl font-headline font-extrabold text-on-surface">{rate.street.buy.toLocaleString(locale, { minimumFractionDigits: 2 })}</span>
           </div>
         </div>
       </div>

@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { ArrowUpDown, Info, Calculator, TrendingUp, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { fetchExchangeRates } from "../api/rates";
+import { useSettings } from "../context/SettingsContext";
 
 export default function Converter() {
+  const { t, locale } = useSettings();
   const [amount, setAmount] = useState<string>("100");
   const [fromUSD, setFromUSD] = useState(true);
   const [rate, setRate] = useState<number>(0);
@@ -30,7 +32,7 @@ export default function Converter() {
       <section className="bg-white rounded-[32px] p-8 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.08)] border border-surface-container flex items-center justify-center py-16">
         <div className="flex flex-col items-center gap-4 text-primary">
           <Loader2 size={32} className="animate-spin" />
-          <p className="font-bold text-sm">Wisselkoers laden...</p>
+          <p className="font-bold text-sm">{t('converter.loading')}</p>
         </div>
       </section>
     );
@@ -47,13 +49,13 @@ export default function Converter() {
             <Calculator size={24} />
           </div>
           <div>
-            <h3 className="font-headline font-bold text-2xl text-on-surface tracking-tight">Valutaomzetter</h3>
-            <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest opacity-60">Snel en eenvoudig omrekenen</p>
+            <h3 className="font-headline font-bold text-2xl text-on-surface tracking-tight">{t('converter.title')}</h3>
+            <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest opacity-60">{t('converter.subtitle')}</p>
           </div>
         </div>
         <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold ring-1 ring-emerald-100">
           <TrendingUp size={14} />
-          <span>Live Street Rate</span>
+          <span>{t('converter.liveBadge')}</span>
         </div>
       </div>
 
@@ -62,7 +64,7 @@ export default function Converter() {
         <div className="space-y-3">
           <div className="flex justify-between items-center px-1">
             <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">
-              Van {fromUSD ? 'Amerikaanse Dollar' : 'Surinaamse Dollar'}
+              {t('converter.fromLabel', { currency: fromUSD ? t('common.amerikaanseDollar') : t('common.surinaamseDollar') })}
             </label>
             <span className="text-[10px] font-bold text-primary">{fromUSD ? 'USD' : 'SRD'}</span>
           </div>
@@ -96,14 +98,14 @@ export default function Converter() {
         <div className="space-y-3">
           <div className="flex justify-between items-center px-1">
             <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">
-              Naar {fromUSD ? 'Surinaamse Dollar' : 'Amerikaanse Dollar'}
+              {t('converter.toLabel', { currency: fromUSD ? t('common.surinaamseDollar') : t('common.amerikaanseDollar') })}
             </label>
             <span className="text-[10px] font-bold text-primary">{fromUSD ? 'SRD' : 'USD'}</span>
           </div>
           <div className="w-full bg-primary/[0.03] border-2 border-primary/5 rounded-3xl px-8 py-6 flex items-center justify-between">
             <span className="text-3xl font-headline font-extrabold text-primary">
               <span className="text-primary/30 mr-2">{fromUSD ? 'SRD' : '$'}</span>
-              {result.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {result.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
             <div className="p-2 bg-white rounded-xl shadow-sm border border-surface-container">
                <Info size={16} className="text-on-surface-variant" />
@@ -115,11 +117,11 @@ export default function Converter() {
       {/* Rate Footer */}
       <div className="mt-10 flex items-center justify-center gap-4 py-4 bg-surface-container-low/50 rounded-2xl border border-surface-container/50">
         <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">
-          Wisselkoers: <span className="text-primary font-bold">1 USD = {rate.toFixed(2)} SRD</span>
+          {t('converter.ratePrefix', { rate: rate.toFixed(2) })}
         </p>
         <div className="w-1 h-1 bg-on-surface-variant/30 rounded-full" />
         <p className="text-[10px] font-bold text-on-surface-variant italic">
-          Street Buy Rate
+          {t('converter.streetRateSublabel')}
         </p>
       </div>
     </section>

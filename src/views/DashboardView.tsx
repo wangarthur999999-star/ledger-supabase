@@ -27,6 +27,17 @@ export default function DashboardView({ onTabChange }: DashboardViewProps) {
     loadRates();
   }, []);
 
+  // 计算最后更新时间文本（避免在 JSX 中使用 IIFE）
+  let lastUpdatedElement = null;
+  if (!isLoading && rates.length > 0) {
+    const { text, isStale } = formatRelativeTime(rates[0].updatedAt, t);
+    lastUpdatedElement = (
+      <p className={`text-xs font-bold mt-1 ${isStale ? 'text-red-600' : 'text-on-surface-variant/70'}`}>
+        {isStale ? '⚠️ ' : ''}{t('dashboard.lastUpdatedPrefix')}{text}
+      </p>
+    );
+  }
+
   return (
     <div className="space-y-12">
       <section className="space-y-2">
@@ -36,14 +47,7 @@ export default function DashboardView({ onTabChange }: DashboardViewProps) {
         <p className="text-on-surface-variant font-medium text-lg">
           {t('dashboard.subtitle')}
         </p>
-        {!isLoading && rates.length > 0 && (() => {
-          const { text, isStale } = formatRelativeTime(rates[0].updatedAt, t);
-          return (
-            <p className={`text-xs font-bold mt-1 ${isStale ? 'text-red-600' : 'text-on-surface-variant/70'}`}>
-              {isStale ? '⚠️ ' : ''}{t('dashboard.lastUpdatedPrefix')}{text}
-            </p>
-          );
-        })()}
+        {lastUpdatedElement}
       </section>
 
       {isLoading ? (

@@ -2,21 +2,22 @@ import { useState, useEffect } from "react";
 import { Globe, Moon, Bell, MessageCircle, ShieldCheck, LogOut, ChevronRight, User, Check, Loader2, Pencil, Save, X, Mail, Phone } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { fetchProfile, updateProfile, UserProfile } from "../api/profile";
+import { useSettings } from "../context/SettingsContext";
+
+const APP_VERSION = "2.4.0";
 
 export default function SettingsView() {
+  const { t, language, setLanguage, darkMode, setDarkMode } = useSettings();
+
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
-  // Edit form state
+
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editPhone, setEditPhone] = useState("");
-  
-  // Settings state (read from profile)
-  const [language, setLanguage] = useState<'NL' | 'EN'>('NL');
-  const [darkMode, setDarkMode] = useState(false);
+
   const [rateAlerts, setRateAlerts] = useState(true);
   const [folderAlerts, setFolderAlerts] = useState(true);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -31,8 +32,6 @@ export default function SettingsView() {
         setEditName(data.display_name);
         setEditEmail(data.email);
         setEditPhone(data.phone);
-        setLanguage(data.language as 'NL' | 'EN');
-        setDarkMode(data.dark_mode);
         setRateAlerts(data.rate_alerts);
         setFolderAlerts(data.folder_alerts);
       }
@@ -61,7 +60,8 @@ export default function SettingsView() {
     setIsSaving(false);
   };
 
-  const handleSettingChange = async (key: string, value: any) => {
+  // 通用字段 (非 language / dark_mode) 的写库 helper
+  const saveProfileField = async (key: string, value: any) => {
     const updates: any = { [key]: value };
     const updated = await updateProfile(updates);
     if (updated) {
@@ -74,7 +74,7 @@ export default function SettingsView() {
     return (
       <div className="flex flex-col items-center justify-center py-32 space-y-4 text-primary">
         <Loader2 size={40} className="animate-spin" />
-        <p className="font-bold">Profiel laden...</p>
+        <p className="font-bold">{t('settings.loading')}</p>
       </div>
     );
   }
@@ -83,18 +83,17 @@ export default function SettingsView() {
 
   return (
     <div className="space-y-10">
-      {/* Profile Header Section */}
       <section className="flex flex-col items-center gap-4 py-4">
         <div className="relative">
-          <div className="w-24 h-24 rounded-full overflow-hidden ring-4 ring-primary-fixed bg-surface-container">
-            <img 
+          <div className="w-24 h-24 rounded-full overflow-hidden ring-4 ring-primary/20 bg-surface-container">
+            <img
               src={avatarUrl}
               className="w-full h-full object-cover"
-              alt="User"
+              alt={t('common.user')}
               referrerPolicy="no-referrer"
             />
           </div>
-          <button 
+          <button
             onClick={() => setIsEditing(!isEditing)}
             className={`absolute bottom-0 right-0 p-2 rounded-full shadow-lg border-4 border-surface transition-colors ${isEditing ? 'bg-red-500 text-white' : 'bg-primary text-white'}`}
           >
@@ -103,15 +102,14 @@ export default function SettingsView() {
         </div>
         <div className="text-center">
           <h2 className="text-2xl font-headline font-extrabold text-on-surface">
-            {profile?.display_name || 'Gebruiker'}
+            {profile?.display_name || t('common.user')}
           </h2>
           <p className="text-on-surface-variant font-medium">
-            {profile?.email || 'Beheer uw voorkeuren en account'}
+            {profile?.email || t('settings.defaultSubtitle')}
           </p>
         </div>
       </section>
 
-      {/* Profile Edit Form */}
       <AnimatePresence>
         {isEditing && (
           <motion.section
@@ -125,54 +123,54 @@ export default function SettingsView() {
                 <div className="p-2.5 bg-primary/10 text-primary rounded-xl">
                   <User size={20} />
                 </div>
-                <h3 className="text-lg font-bold">Persoonlijke Gegevens</h3>
+                <h3 className="text-lg font-bold">{t('settings.personalInfo')}</h3>
               </div>
 
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Naam</label>
+                  <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">{t('settings.name')}</label>
                   <div className="relative">
                     <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-                    <input 
+                    <input
                       type="text"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
-                      placeholder="Uw volledige naam"
+                      placeholder={t('settings.namePlaceholder')}
                       className="w-full bg-surface-container-low rounded-2xl py-4 pl-11 pr-4 font-bold outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">E-mailadres</label>
+                  <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">{t('settings.email')}</label>
                   <div className="relative">
                     <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-                    <input 
+                    <input
                       type="email"
                       value={editEmail}
                       onChange={(e) => setEditEmail(e.target.value)}
-                      placeholder="uw@email.com"
+                      placeholder={t('settings.emailPlaceholder')}
                       className="w-full bg-surface-container-low rounded-2xl py-4 pl-11 pr-4 font-bold outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Telefoonnummer</label>
+                  <label className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">{t('settings.phone')}</label>
                   <div className="relative">
                     <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-                    <input 
+                    <input
                       type="tel"
                       value={editPhone}
                       onChange={(e) => setEditPhone(e.target.value)}
-                      placeholder="+597 xxxxxxx"
+                      placeholder={t('settings.phonePlaceholder')}
                       className="w-full bg-surface-container-low rounded-2xl py-4 pl-11 pr-4 font-bold outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                     />
                   </div>
                 </div>
               </div>
 
-              <button 
+              <button
                 onClick={handleSaveProfile}
                 disabled={isSaving}
                 className="w-full py-4 bg-primary text-white rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-primary-container transition-all active:scale-[0.98] disabled:opacity-60"
@@ -180,12 +178,12 @@ export default function SettingsView() {
                 {isSaving ? (
                   <>
                     <Loader2 size={18} className="animate-spin" />
-                    Opslaan...
+                    {t('settings.saving')}
                   </>
                 ) : (
                   <>
                     <Save size={18} />
-                    Opslaan in Cloud
+                    {t('settings.saveToCloud')}
                   </>
                 )}
               </button>
@@ -201,22 +199,22 @@ export default function SettingsView() {
             <div className="p-2.5 bg-primary/10 text-primary rounded-xl">
               <Globe size={20} />
             </div>
-            <h3 className="text-lg font-bold">Algemeen</h3>
+            <h3 className="text-lg font-bold">{t('settings.general')}</h3>
           </div>
           <div className="flex justify-between items-center py-2">
             <div>
-              <p className="font-bold text-on-surface">Taal</p>
-              <p className="text-xs text-on-surface-variant">Kies uw voorkeurstaal</p>
+              <p className="font-bold text-on-surface">{t('settings.language')}</p>
+              <p className="text-xs text-on-surface-variant">{t('settings.languageSub')}</p>
             </div>
             <div className="flex bg-surface-container p-1 rounded-full">
-              <button 
-                onClick={() => { setLanguage('NL'); handleSettingChange('language', 'NL'); }}
+              <button
+                onClick={() => { setLanguage('NL'); showToast(); }}
                 className={`px-5 py-1.5 text-[11px] font-black rounded-full transition-all ${language === 'NL' ? 'bg-primary text-white' : 'text-on-surface-variant hover:text-on-surface'}`}
               >
                 NL
               </button>
-              <button 
-                onClick={() => { setLanguage('EN'); handleSettingChange('language', 'EN'); }}
+              <button
+                onClick={() => { setLanguage('EN'); showToast(); }}
                 className={`px-5 py-1.5 text-[11px] font-black rounded-full transition-all ${language === 'EN' ? 'bg-primary text-white' : 'text-on-surface-variant hover:text-on-surface'}`}
               >
                 EN
@@ -231,18 +229,18 @@ export default function SettingsView() {
             <div className="p-2.5 bg-secondary-container text-secondary rounded-xl">
               <Moon size={20} />
             </div>
-            <h3 className="text-lg font-bold">Weergave</h3>
+            <h3 className="text-lg font-bold">{t('settings.display')}</h3>
           </div>
           <div className="flex justify-between items-center py-2">
             <div>
-              <p className="font-bold text-on-surface">Donkere Modus</p>
-              <p className="text-xs text-on-surface-variant">{darkMode ? 'Ingeschakeld' : 'Systeem standaard'}</p>
+              <p className="font-bold text-on-surface">{t('settings.darkMode')}</p>
+              <p className="text-xs text-on-surface-variant">{darkMode ? t('settings.darkModeOn') : t('settings.darkModeOff')}</p>
             </div>
-            <button 
-              onClick={() => { setDarkMode(!darkMode); handleSettingChange('dark_mode', !darkMode); }}
+            <button
+              onClick={() => { setDarkMode(!darkMode); showToast(); }}
               className={`w-12 h-6 rounded-full relative p-1 transition-colors ${darkMode ? 'bg-primary' : 'bg-surface-container'}`}
             >
-              <motion.div 
+              <motion.div
                 animate={{ x: darkMode ? 24 : 0 }}
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 className="w-4 h-4 bg-white rounded-full shadow-sm"
@@ -257,22 +255,22 @@ export default function SettingsView() {
             <div className="p-2.5 bg-orange-100 text-orange-600 rounded-xl">
               <Bell size={20} />
             </div>
-            <h3 className="text-lg font-bold">Meldingen</h3>
+            <h3 className="text-lg font-bold">{t('settings.notifications')}</h3>
           </div>
           <div className="space-y-8">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
                 <span className="p-2 bg-primary/5 text-primary rounded-lg font-bold text-xs">📈</span>
                 <div>
-                  <p className="font-bold text-on-surface">Koerswaarschuwingen</p>
-                  <p className="text-xs text-on-surface-variant">Ontvang meldingen bij grote SRD wijzigingen</p>
+                  <p className="font-bold text-on-surface">{t('settings.rateAlerts')}</p>
+                  <p className="text-xs text-on-surface-variant">{t('settings.rateAlertsSub')}</p>
                 </div>
               </div>
-              <button 
-                onClick={() => { setRateAlerts(!rateAlerts); handleSettingChange('rate_alerts', !rateAlerts); }}
+              <button
+                onClick={() => { setRateAlerts(!rateAlerts); saveProfileField('rate_alerts', !rateAlerts); }}
                 className={`w-12 h-6 rounded-full relative p-1 transition-colors ${rateAlerts ? 'bg-primary' : 'bg-surface-container'}`}
               >
-                <motion.div 
+                <motion.div
                   animate={{ x: rateAlerts ? 24 : 0 }}
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   className="w-4 h-4 bg-white rounded-full shadow-sm"
@@ -283,15 +281,15 @@ export default function SettingsView() {
               <div className="flex items-center gap-4">
                 <span className="p-2 bg-primary/5 text-primary rounded-lg font-bold text-xs">📖</span>
                 <div>
-                  <p className="font-bold text-on-surface">Nieuwe Folders</p>
-                  <p className="text-xs text-on-surface-variant">Meldingen voor de nieuwste aanbiedingen</p>
+                  <p className="font-bold text-on-surface">{t('settings.folderAlerts')}</p>
+                  <p className="text-xs text-on-surface-variant">{t('settings.folderAlertsSub')}</p>
                 </div>
               </div>
-              <button 
-                onClick={() => { setFolderAlerts(!folderAlerts); handleSettingChange('folder_alerts', !folderAlerts); }}
+              <button
+                onClick={() => { setFolderAlerts(!folderAlerts); saveProfileField('folder_alerts', !folderAlerts); }}
                 className={`w-12 h-6 rounded-full relative p-1 transition-colors ${folderAlerts ? 'bg-primary' : 'bg-surface-container'}`}
               >
-                <motion.div 
+                <motion.div
                   animate={{ x: folderAlerts ? 24 : 0 }}
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   className="w-4 h-4 bg-white rounded-full shadow-sm"
@@ -304,10 +302,10 @@ export default function SettingsView() {
         {/* Support */}
         <div className="md:col-span-2 space-y-4">
           <div className="flex items-center gap-3 px-1">
-            <h3 className="text-lg font-bold">Ondersteuning</h3>
+            <h3 className="text-lg font-bold">{t('settings.support')}</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button 
+            <button
               onClick={() => window.open('https://wa.me/5978000000', '_blank')}
               className="flex items-center justify-between p-5 bg-white rounded-3xl border border-surface-container group hover:border-emerald-200 transition-colors"
             >
@@ -316,14 +314,14 @@ export default function SettingsView() {
                   <MessageCircle size={24} />
                 </div>
                 <div className="text-left">
-                  <p className="font-bold">WhatsApp Support</p>
-                  <p className="text-xs text-on-surface-variant">Direct antwoord op uw vragen</p>
+                  <p className="font-bold">{t('settings.whatsapp')}</p>
+                  <p className="text-xs text-on-surface-variant">{t('settings.whatsappSub')}</p>
                 </div>
               </div>
               <ChevronRight className="text-on-surface-variant group-hover:translate-x-1 transition-transform" />
             </button>
-            <button 
-              onClick={() => alert('Privacybeleid: Uw gegevens worden veilig opgeslagen in Supabase en worden nooit gedeeld met derden.')}
+            <button
+              onClick={() => alert(t('settings.privacyAlert'))}
               className="flex items-center justify-between p-5 bg-white rounded-3xl border border-surface-container group hover:border-primary/20 transition-colors"
             >
               <div className="flex items-center gap-4">
@@ -331,8 +329,8 @@ export default function SettingsView() {
                   <ShieldCheck size={24} />
                 </div>
                 <div className="text-left">
-                  <p className="font-bold">Privacy Beleid</p>
-                  <p className="text-xs text-on-surface-variant">Hoe wij uw data beschermen</p>
+                  <p className="font-bold">{t('settings.privacy')}</p>
+                  <p className="text-xs text-on-surface-variant">{t('settings.privacySub')}</p>
                 </div>
               </div>
               <ChevronRight className="text-on-surface-variant group-hover:translate-x-1 transition-transform" />
@@ -342,17 +340,18 @@ export default function SettingsView() {
       </div>
 
       <div className="py-8">
-        <button 
+        <button
           onClick={() => setShowLogoutConfirm(true)}
           className="w-full py-5 rounded-3xl bg-red-50 text-red-600 font-bold flex items-center justify-center gap-2 border border-red-100 active:scale-[0.98] transition-all hover:bg-red-100"
         >
           <LogOut size={20} />
-          Uitloggen
+          {t('settings.logout')}
         </button>
-        <p className="text-center text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mt-8">Versie 2.4.0 • Gemaakt in Suriname 🇸🇷</p>
+        <p className="text-center text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mt-8">
+          {t('settings.version', { v: APP_VERSION })}
+        </p>
       </div>
 
-      {/* Saved Toast */}
       <AnimatePresence>
         {showSavedToast && (
           <motion.div
@@ -362,12 +361,11 @@ export default function SettingsView() {
             className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[100] bg-primary text-white px-6 py-3 rounded-2xl shadow-xl flex items-center gap-2 font-bold text-sm"
           >
             <Check size={18} />
-            Opgeslagen in cloud!
+            {t('settings.savedToast')}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Logout Confirmation Modal */}
       <AnimatePresence>
         {showLogoutConfirm && (
           <motion.div
@@ -388,24 +386,24 @@ export default function SettingsView() {
                 <LogOut size={32} />
               </div>
               <div>
-                <h3 className="font-headline font-bold text-xl text-on-surface">Uitloggen?</h3>
-                <p className="text-sm text-on-surface-variant mt-2">Weet u zeker dat u wilt uitloggen? U kunt later weer inloggen.</p>
+                <h3 className="font-headline font-bold text-xl text-on-surface">{t('settings.logoutConfirmTitle')}</h3>
+                <p className="text-sm text-on-surface-variant mt-2">{t('settings.logoutConfirmBody')}</p>
               </div>
               <div className="flex gap-3">
-                <button 
+                <button
                   onClick={() => setShowLogoutConfirm(false)}
                   className="flex-1 py-4 rounded-2xl font-bold bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
                 >
-                  Annuleren
+                  {t('settings.cancel')}
                 </button>
-                <button 
+                <button
                   onClick={() => {
                     setShowLogoutConfirm(false);
-                    alert('U bent uitgelogd.');
+                    alert(t('settings.loggedOutAlert'));
                   }}
                   className="flex-1 py-4 rounded-2xl font-bold bg-red-600 text-white hover:bg-red-700 transition-colors"
                 >
-                  Uitloggen
+                  {t('settings.logout')}
                 </button>
               </div>
             </motion.div>

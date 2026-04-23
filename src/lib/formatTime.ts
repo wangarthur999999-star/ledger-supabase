@@ -1,8 +1,8 @@
-// 把 ISO 时间戳格式化为荷兰语相对时间描述。
-// 用于显示数据新鲜度（"zojuist" / "5 minuten geleden" / "2 uur geleden" / ...）。
+// 把 ISO 时间戳格式化成与 UI 语言一致的相对时间描述。
+// 通过依赖注入的方式接收 t 函数, 本身不依赖 React (可在任何地方调用)。
 //
-// 如果时间戳 undefined 或超过 48 小时，返回警告字符串。
-// 这一判断阈值可按需调整。
+// 如果时间戳 undefined 或超过 STALE_THRESHOLD, isStale = true, 调用方通常会用
+// 警告色渲染。
 
 const MINUTE = 60 * 1000;
 const HOUR = 60 * MINUTE;
@@ -14,40 +14,43 @@ export interface FormattedTime {
   isStale: boolean;
 }
 
+// t 函数的最小形状, 避免把 formatTime 耦合到 SettingsContext 的具体 TKey 联合类型
+type TimeT = (key: string, vars?: Record<string, string | number>) => string;
+
 export function formatRelativeTime(
   isoTimestamp: string | undefined | null,
+  t: TimeT,
   now: Date = new Date()
 ): FormattedTime {
   if (!isoTimestamp) {
-    return { text: 'Onbekend', isStale: true };
+    return { text: t('common.unknown'), isStale: true };
   }
 
   const then = new Date(isoTimestamp);
   if (Number.isNaN(then.getTime())) {
-    return { text: 'Onbekend', isStale: true };
+    return { text: t('common.unknown'), isStale: true };
   }
 
   const diff = now.getTime() - then.getTime();
 
-  // 未来时间（时钟偏差或数据异常）—— 当作刚刚
   if (diff < 0) {
-    return { text: 'zojuist', isStale: false };
+    return { text: t('time.justNow'), isStale: false };
   }
 
   const isStale = diff > STALE_THRESHOLD;
 
   let text: string;
   if (diff < MINUTE) {
-    text = 'zojuist';
+    text = t('time.justNow');
   } else if (diff < HOUR) {
     const mins = Math.floor(diff / MINUTE);
-    text = `${mins} ${mins === 1 ? 'minuut' : 'minuten'} geleden`;
+    text = t(mins === 1 ? 'time.minuteAgo' : 'time.minutesAgo', { n: mins });
   } else if (diff < DAY) {
     const hrs = Math.floor(diff / HOUR);
-    text = `${hrs} ${hrs === 1 ? 'uur' : 'uur'} geleden`;
+    text = t(hrs === 1 ? 'time.hourAgo' : 'time.hoursAgo', { n: hrs });
   } else {
     const days = Math.floor(diff / DAY);
-    text = `${days} ${days === 1 ? 'dag' : 'dagen'} geleden`;
+    text = t(days === 1 ? 'time.dayAgo' : 'time.daysAgo', { n: days });
   }
 
   return { text, isStale };

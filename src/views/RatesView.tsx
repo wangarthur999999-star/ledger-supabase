@@ -4,8 +4,10 @@ import { motion } from "motion/react";
 import { ExchangeRate } from "../types";
 import { fetchExchangeRates } from "../api/rates";
 import { formatRelativeTime } from "../lib/formatTime";
+import { useSettings } from "../context/SettingsContext";
 
 export default function RatesView() {
+  const { t, locale } = useSettings();
   const [rates, setRates] = useState<ExchangeRate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -23,16 +25,16 @@ export default function RatesView() {
     <div className="space-y-10">
       <section className="space-y-2">
         <h2 className="font-headline font-extrabold text-4xl text-primary tracking-tight leading-tight">
-          Wisselkoersen
+          {t('rates.title')}
         </h2>
         <p className="text-on-surface-variant font-medium text-lg">
-          Alle koersen op één plek – officieel & straat.
+          {t('rates.subtitle')}
         </p>
         {!isLoading && rates.length > 0 && (() => {
-          const { text, isStale } = formatRelativeTime(rates[0].updatedAt);
+          const { text, isStale } = formatRelativeTime(rates[0].updatedAt, t);
           return (
             <p className={`text-xs font-bold mt-1 ${isStale ? 'text-red-600' : 'text-on-surface-variant/70'}`}>
-              {isStale ? '⚠️ ' : ''}Laatst bijgewerkt: {text}
+              {isStale ? '⚠️ ' : ''}{t('rates.lastUpdatedPrefix')}{text}
             </p>
           );
         })()}
@@ -41,13 +43,14 @@ export default function RatesView() {
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-20 space-y-4 text-primary">
           <Loader2 size={40} className="animate-spin" />
-          <p className="font-bold">Koersen laden...</p>
+          <p className="font-bold">{t('rates.loading')}</p>
         </div>
       ) : (
         <div className="space-y-6">
           {rates.map((rate) => {
             const isUp = rate.change >= 0;
             const Icon = rate.pair.includes('USD') ? DollarSign : Euro;
+            const spreadValue = (Number(rate.street.sell) - Number(rate.street.buy)).toFixed(2);
 
             return (
               <motion.div
@@ -56,7 +59,6 @@ export default function RatesView() {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-white rounded-3xl p-6 border border-surface-container shadow-sm overflow-hidden relative"
               >
-                {/* Header */}
                 <div className="flex justify-between items-center mb-8">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
@@ -73,58 +75,53 @@ export default function RatesView() {
                   </div>
                 </div>
 
-                {/* Rate Grid */}
                 <div className="grid grid-cols-2 gap-4">
-                  {/* Official */}
                   <div className="bg-surface-container-low rounded-2xl p-5 space-y-4">
-                    <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Official (CBvS)</p>
+                    <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">{t('rates.officialLabel')}</p>
                     <div className="space-y-3">
                       <div className="flex justify-between items-baseline">
-                        <span className="text-xs font-bold text-on-surface-variant">Aankoop</span>
+                        <span className="text-xs font-bold text-on-surface-variant">{t('rates.buy')}</span>
                         <span className="text-xl font-headline font-extrabold text-primary">
-                          {Number(rate.official.buy).toLocaleString('nl-NL', { minimumFractionDigits: 2 })}
+                          {Number(rate.official.buy).toLocaleString(locale, { minimumFractionDigits: 2 })}
                         </span>
                       </div>
                       <div className="h-px bg-surface-container" />
                       <div className="flex justify-between items-baseline">
-                        <span className="text-xs font-bold text-on-surface-variant">Verkoop</span>
+                        <span className="text-xs font-bold text-on-surface-variant">{t('rates.sell')}</span>
                         <span className="text-xl font-headline font-extrabold text-on-surface">
-                          {Number(rate.official.sell).toLocaleString('nl-NL', { minimumFractionDigits: 2 })}
+                          {Number(rate.official.sell).toLocaleString(locale, { minimumFractionDigits: 2 })}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Street */}
                   <div className="bg-primary/[0.03] rounded-2xl p-5 space-y-4 border border-primary/5">
-                    <p className="text-[10px] font-black text-primary uppercase tracking-widest">Street (Cambio)</p>
+                    <p className="text-[10px] font-black text-primary uppercase tracking-widest">{t('rates.streetLabel')}</p>
                     <div className="space-y-3">
                       <div className="flex justify-between items-baseline">
-                        <span className="text-xs font-bold text-primary/60">Aankoop</span>
+                        <span className="text-xs font-bold text-primary/60">{t('rates.buy')}</span>
                         <span className="text-xl font-headline font-extrabold text-primary">
-                          {Number(rate.street.buy).toLocaleString('nl-NL', { minimumFractionDigits: 2 })}
+                          {Number(rate.street.buy).toLocaleString(locale, { minimumFractionDigits: 2 })}
                         </span>
                       </div>
                       <div className="h-px bg-primary/10" />
                       <div className="flex justify-between items-baseline">
-                        <span className="text-xs font-bold text-primary/60">Verkoop</span>
+                        <span className="text-xs font-bold text-primary/60">{t('rates.sell')}</span>
                         <span className="text-xl font-headline font-extrabold text-primary">
-                          {Number(rate.street.sell).toLocaleString('nl-NL', { minimumFractionDigits: 2 })}
+                          {Number(rate.street.sell).toLocaleString(locale, { minimumFractionDigits: 2 })}
                         </span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Spread indicator */}
                 <div className="mt-4 flex items-center justify-center gap-3 py-3 bg-surface-container-low/50 rounded-xl">
                   <ArrowUpDown size={14} className="text-on-surface-variant" />
                   <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">
-                    Spread: <span className="text-primary">{(Number(rate.street.sell) - Number(rate.street.buy)).toFixed(2)} SRD</span>
+                    {t('rates.spread', { value: spreadValue })}
                   </p>
                 </div>
 
-                {/* Watermark */}
                 <div className="absolute -right-6 -bottom-6 opacity-[0.02]">
                   <Icon size={160} />
                 </div>

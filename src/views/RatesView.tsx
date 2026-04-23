@@ -5,6 +5,7 @@ import { ExchangeRate } from "../types";
 import { fetchExchangeRates } from "../api/rates";
 import { formatRelativeTime } from "../lib/formatTime";
 import { useSettings } from "../context/SettingsContext";
+import { supabase } from "../lib/supabase";
 
 export default function RatesView() {
   const { t, locale } = useSettings();
@@ -19,6 +20,24 @@ export default function RatesView() {
       setIsLoading(false);
     };
     loadRates();
+
+    // 订阅 exchange_rates 表变化（实时刷新）
+    const channel = supabase
+      .channel('rates_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'exchange_rates' },
+        async (payload) => {
+          console.log('[Realtime] exchange_rates changed:', payload);
+          const data = await fetchExchangeRates();
+          setRates(data);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   // 计算最后更新时间文本（避免在 JSX 中使用 IIFE）

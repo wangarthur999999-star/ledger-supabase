@@ -5,43 +5,44 @@
 //
 // 数据源:
 //   1. FRED API (https://fred.stlouisfed.org/docs/api/api_key.html)
-//      - GOLD:  GOLDAMGBD228NLBM  (London Gold Fixing)
-//      - WTI:   DCOILWTICO        (Crude Oil, WTI)
-//      - BRENT: DCOILBRENTEU      (Crude Oil, Brent)
-//      - COPPER: PCOPPUSDM        (Copper, Global Price)
+//      - GOLD:  Gold Fixing (USD/oz)
+//      - WTI:   DCOILWTICO      (Crude Oil, WTI, USD/bbl)
+//      - BRENT: DCOILBRENTEU     (Crude Oil, Brent, USD/bbl)
+//      - COPPER: PCOPPUSDM       (Copper, USD/MT → 除以 2204.62 = USD/lb)
 //
 //   2. metals.dev (https://metals.dev/)
-//      - SILVER, GOLD 等贵金属
+//      - SILVER 等贵金属
 //
 // 环境变量:
 //   SUPABASE_URL                必填
 //   SUPABASE_SERVICE_ROLE_KEY   必填
-//   FRED_API_KEY                必填 (从 fred.stlouisfed.org 注册获取)
-//   METALS_DEV_API_KEY          必填 (从 metals.dev 注册获取)
-//   DRY_RUN                     "1" 时只打印不写库
+//   FRED_API_KEY               必填 (从 fred.stlouisfed.org 注册获取)
+//   METALS_DEV_API_KEY         必填 (从 metals.dev 注册获取)
+//   DRY_RUN                    "1" 时只打印不写库
 
 import { createClient } from '@supabase/supabase-js';
 import axios from 'axios';
 
-// ─── 环境变量 ──────────────────────────────────
+// ─── 环境变量 ──────────────────────────
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const FRED_API_KEY = process.env.FRED_API_KEY;
 const METALS_DEV_API_KEY = process.env.METALS_DEV_API_KEY;
 const DRY_RUN = process.env.DRY_RUN === '1';
 
-// ─── FRED 数据系列配置 ─────────────────────────
+// ─── FRED 数据系列配置 ─────────────────
+// unitFactor: FRED 返回值的单位转换因子（乘以该值得到目标单位）
 const FRED_CONFIG = {
-  GOLD:   { seriesId: 'GOLDAMGBD228NLBM', name: 'Gold',   unit: 'USD/oz' },
-  WTI:    { seriesId: 'DCOILWTICO',       name: 'WTI Crude', unit: 'USD/bbl' },
-  BRENT:  { seriesId: 'DCOILBRENTEU',     name: 'Brent Crude', unit: 'USD/bbl' },
-  COPPER: { seriesId: 'PCOPPUSDM',        name: 'Copper', unit: 'USD/lb' },
+  GOLD:   { seriesId: 'GOLD',           name: 'Gold',   unitFactor: 1        },
+  WTI:    { seriesId: 'DCOILWTICO',    name: 'WTI Crude',   unitFactor: 1        },
+  BRENT:  { seriesId: 'DCOILBRENTEU',  name: 'Brent Crude', unitFactor: 1        },
+  COPPER: { seriesId: 'PCOPPUSDM',      name: 'Copper',       unitFactor: 1/2204.62 },
 };
 
-// ─── metals.dev 配置 ──────────────────────────
-const METALS_DEV_URL = 'https://metals.dev/api/v1/latest';
+// ─── metals.dev 配置 ─────────────────────
+const METALS_DEV_URL = 'https://api.metals.dev/v1/spot';
 
-// ─── Supabase 客户端 ───────────────────────────
+// ─── Supabase 客户端 ─────────────────────
 let supabase;
 function getSupabase() {
   if (!supabase) {
@@ -50,7 +51,7 @@ function getSupabase() {
   return supabase;
 }
 
-// ─── 工具函数 ──────────────────────────────────
+// ─── 工具函数 ────────────────────────────
 function requireEnv() {
   if (DRY_RUN) return;
   const missing = [];
@@ -73,7 +74,7 @@ async function fetchJson(url, config = {}) {
   return res.data;
 }
 
-// ─── FRED API 抓取 ─────────────────────────────
+// ─── FRED API 抓取 ───────────────────────
 async function fetchFredPrice(seriesId, symbol) {
   console.log(`🏛️  FRED [${symbol}] series=${seriesId}`);
   const url = 'https://api.stlouisfed.org/fred/series/observations';
@@ -92,28 +93,27 @@ async function fetchFredPrice(seriesId, symbol) {
   }
 
   const latest = data.observations[0];
-  const value = parseFloat(latest.value);
-  if (!Number.isFinite(value) || value <= 0) {
+  const rawValue = parseFloat(latest.value);
+  if (!Number.isFinite(rawValue) || rawValue <= 0) {
     throw new Error(`FRED ${seriesId} 返回非法数值: ${latest.value}`);
   }
 
-  console.log(`   ✅ ${latest.date} → ${value}`);
-  return value;
+  console.log(`   ✅ ${latest.date} → ${rawValue}`);
+  return rawValue;
 }
 
-// ─── metals.dev API 抓取 ──────────────────────
+// ─── metals.dev API 抓取 ─────────────────
 async function fetchMetalsDevPrices() {
   console.log(`💎  metals.dev [SILVER]`);
   const data = await fetchJson(METALS_DEV_URL, {
-    headers: { 'X-API-Key': METALS_DEV_API_KEY },
+    headers: { 'x-api-key': METALS_DEV_API_KEY },
   });
 
-  // metals.dev 返回格式可能是:
-  // { metals: [ { symbol: 'SILVER', price: 27.5, currency: 'USD' }, ... ] }
-  // 或者是直接数组: [ { symbol: 'SILVER', price: 27.5 }, ... ]
-  const metals = Array.isArray(data) ? data : data?.metals || data?.data || [];
+  // metals.dev 返回格式: { data: [ { metal: 'silver', price: 27.5, ... }, ... ] }
+  const metals = data?.data || data?.metals || [];
   const silver = metals.find(m =>
-    m.symbol === 'SILVER' || m.symbol === 'AG' || m.name?.toLowerCase().includes('silver')
+    (m.metal && m.metal.toLowerCase().includes('silver')) ||
+    (m.symbol && m.symbol === 'SILVER')
   );
 
   if (!silver || !Number.isFinite(parseFloat(silver.price))) {
@@ -125,7 +125,7 @@ async function fetchMetalsDevPrices() {
   return { SILVER: price };
 }
 
-// ─── 数据库更新 ────────────────────────────────
+// ─── 数据库更新 ──────────────────────────
 async function updatePrice(symbol, newPrice, source) {
   const { data: current } = await getSupabase()
     .from('prices')
@@ -160,7 +160,7 @@ async function updatePrice(symbol, newPrice, source) {
   }
 }
 
-// ─── 主流程 ────────────────────────────────────
+// ─── 主流程 ──────────────────────────────
 async function main() {
   requireEnv();
   console.log('🚀 开始更新商品价格...\n');
@@ -171,7 +171,8 @@ async function main() {
   // ── Step 1: FRED 数据 ──
   for (const [symbol, cfg] of Object.entries(FRED_CONFIG)) {
     try {
-      const price = await fetchFredPrice(cfg.seriesId, symbol);
+      let rawPrice = await fetchFredPrice(cfg.seriesId, symbol);
+      const price = round2(rawPrice * cfg.unitFactor);
       await updatePrice(symbol, price, 'fred');
       results.push({ symbol, price, source: 'fred', status: '✅' });
     } catch (err) {

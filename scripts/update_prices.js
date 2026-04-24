@@ -10,16 +10,16 @@
 //      - COPPER: PCOPPUSDM        (Copper, USD/MT → 除以 2204.62 = USD/lb)
 //
 //   GOLD/SILVER: FRED 免费 API 无有效日度金价/银价，已移除。
-//      如需添加，请注册付费 API 或使用其他数据源（如 metals.dev 有效 key）。
 //
 // 环境变量:
 //   SUPABASE_URL                必填
 //   SUPABASE_SERVICE_ROLE_KEY   必填
-//   FRED_API_KEY               必填 (从 fred.stlouisfed.org 注册获取)
-//   DRY_RUN                    "1" 时只打印不写库
+//   FRED_API_KEY                必填
+//   DRY_RUN                     "1" 时只打印不写库
 
 import { createClient } from '@supabase/supabase-js';
 import axios from 'axios';
+import { fileURLToPath } from 'url';
 
 // ─── 环境变量 ──────────────────────────
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -28,8 +28,8 @@ const FRED_API_KEY = process.env.FRED_API_KEY;
 const DRY_RUN = process.env.DRY_RUN === '1';
 
 // ─── FRED 数据系列配置 ─────────────────
-// unitFactor: FRED 返回值的单位转换因子（乘以该值得到目标单位）
-const FRED_CONFIG = {
+// unitFactor: FRED 返回值的单位转换因子
+export const FRED_CONFIG = {
   WTI:    { seriesId: 'DCOILWTICO',    name: 'WTI Crude',    unitFactor: 1         },
   BRENT:  { seriesId: 'DCOILBRENTEU',  name: 'Brent Crude',  unitFactor: 1         },
   COPPER: { seriesId: 'PCOPPUSDM',     name: 'Copper',       unitFactor: 1/2204.62 },
@@ -45,19 +45,20 @@ function getSupabase() {
 }
 
 // ─── 工具函数 ──────────────────────────
-function requireEnv() {
+export function requireEnv() {
   if (DRY_RUN) return;
   const missing = [];
   if (!SUPABASE_URL) missing.push('SUPABASE_URL');
   if (!SUPABASE_SERVICE_ROLE_KEY) missing.push('SUPABASE_SERVICE_ROLE_KEY');
   if (!FRED_API_KEY) missing.push('FRED_API_KEY');
   if (missing.length) {
-    console.error('❌ 缺少环境变量:', missing.join(', '));
-    process.exit(1);
+    const msg = '❌ 缺少环境变量: ' + missing.join(', ');
+    console.error(msg);
+    throw new Error(msg);
   }
 }
 
-function round2(n) {
+export function round2(n) {
   return Math.round(n * 100) / 100;
 }
 
@@ -67,7 +68,23 @@ async function fetchJson(url, config = {}) {
 }
 
 // ─── FRED API 抓取 ─────────────────────
-async function fetchFredPrice(seriesId, symbol) {
+// 模拟数据（DRY_RUN 时使用，单位与 FRED API 返回值一致）
+const MOCK_PRICES = {
+  WTI:    75.43,    // USD/bbl (DCOILWTICO)
+  BRENT:  79.87,    // USD/bbl (DCOILBRENTEU)
+  COPPER: 10045.32,  // USD/MT (PCOPPUSDM) → 4.56 USD/lb
+};
+
+export async function fetchFredPrice(seriesId, symbol) {
+  // DRY_RUN 模式：返回模拟数据，不调用 API
+  if (DRY_RUN) {
+    const mockPrice = MOCK_PRICES[symbol];
+    if (!mockPrice) throw new Error(`No mock price for ${symbol}`);
+    console.log(`🏛️  FRED [${symbol}] series=${seriesId} [DRY_RUN 模拟数据]`);
+    console.log(`   ✅ 2026-04-23 → ${mockPrice}`);
+    return mockPrice;
+  }
+
   console.log(`🏛️  FRED [${symbol}] series=${seriesId}`);
   const url = 'https://api.stlouisfed.org/fred/series/observations';
   const data = await fetchJson(url, {
@@ -94,19 +111,41 @@ async function fetchFredPrice(seriesId, symbol) {
   return rawValue;
 }
 
-// ─── 数据库更新 ──────────────────────
-async function updatePrice(symbol, newPrice, source) {
-  const { data: current } = await getSupabase()
+// ─── 数据库更新 (upsert，依赖 symbol UNIQUE 约束) ──────
+async function upsertPrice(symbol, newPrice, source) {
+  // DRY_RUN 模式：跳过数据库，只模拟计算
+  if (DRY_RUN) {
+    const mockPayload = {
+      symbol,
+      name: FRED_CONFIG[symbol].name,
+      price: newPrice,
+      change: 0,
+      change_pct: 0,
+      source,
+      updated_at: new Date().toISOString(),
+    };
+    console.log(`   🧪 DRY_RUN [${symbol}]`, mockPayload);
+    return;
+  }
+
+  // 先读当前价格用于计算 change
+  const { data: current, error: selectError } = await getSupabase()
     .from('prices')
     .select('price')
     .eq('symbol', symbol)
     .maybeSingle();
 
-  const oldPrice = current?.price || newPrice;
+  if (selectError) {
+    throw new Error(`Supabase select failed for ${symbol}: ${selectError.message}`);
+  }
+
+  const oldPrice = current?.price ?? newPrice;
   const change = round2(newPrice - oldPrice);
   const changePct = oldPrice !== 0 ? round2((change / oldPrice) * 100) : 0;
 
   const payload = {
+    symbol,
+    name: FRED_CONFIG[symbol].name,
     price: newPrice,
     change,
     change_pct: changePct,
@@ -114,35 +153,29 @@ async function updatePrice(symbol, newPrice, source) {
     updated_at: new Date().toISOString(),
   };
 
-  if (DRY_RUN) {
-    console.log(`   🧪 DRY_RUN [${symbol}]`, payload);
-    return;
-  }
-
   const { error } = await getSupabase()
     .from('prices')
-    .update(payload)
-    .eq('symbol', symbol);
+    .upsert(payload, { onConflict: 'symbol' });
 
   if (error) {
-    throw new Error(`Supabase update failed for ${symbol}: ${error.message}`);
+    throw new Error(`Supabase upsert failed for ${symbol}: ${error.message}`);
   }
 }
 
 // ─── 主流程 ──────────────────────────
-async function main() {
+export async function main() {
   requireEnv();
   console.log('🚀 开始更新商品价格...\n');
 
   const results = [];
   const errors = [];
 
-  // ── Step 1: FRED 数据 ──
+  // FRED 数据
   for (const [symbol, cfg] of Object.entries(FRED_CONFIG)) {
     try {
       const rawPrice = await fetchFredPrice(cfg.seriesId, symbol);
       const price = round2(rawPrice * cfg.unitFactor);
-      await updatePrice(symbol, price, 'fred');
+      await upsertPrice(symbol, price, 'fred');
       results.push({ symbol, price, source: 'fred', status: '✅' });
     } catch (err) {
       console.error(`   ❌ ${symbol}: ${err.message}`);
@@ -150,7 +183,7 @@ async function main() {
     }
   }
 
-  // ── 汇总 ──
+  // 汇总
   console.log('\n📊 更新结果:');
   console.table(results);
 
@@ -160,14 +193,21 @@ async function main() {
   }
 
   if (!results.length) {
-    console.error('\n🚨 没有任何商品价格更新成功');
-    process.exit(1);
+    throw new Error('没有任何商品价格更新成功');
   }
 
   console.log(`\n🎉 完成: ${results.length} 成功, ${errors.length} 失败`);
+  return { results, errors };
 }
 
-main().catch(err => {
-  console.error('\n🚨 脚本异常:', err.message);
-  process.exit(1);
-});
+// 只有直接运行时才执行 main；被 import 时（如测试）不执行
+const scriptPath = fileURLToPath(import.meta.url);
+const isDirectRun = scriptPath === process.argv[1] ||
+                    scriptPath.endsWith(process.argv[1]);
+
+if (isDirectRun) {
+  main().catch(err => {
+    console.error('\n🚨 脚本异常:', err.message);
+    process.exit(1);
+  });
+}

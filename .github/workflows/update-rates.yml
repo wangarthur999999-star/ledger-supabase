@@ -27,6 +27,6 @@ jobs:
 
       - name: Update rates
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_URL: ${{ secrets.URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.KEY }}
         run: node scripts/update_rates.js

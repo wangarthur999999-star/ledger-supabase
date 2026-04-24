@@ -30,3 +30,11 @@ jobs:
           SUPABASE_URL: ${{ secrets.URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.KEY }}
         run: node scripts/update_rates.js
+
+      - name: Update prices
+        env:
+          SUPABASE_URL: ${{ secrets.URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          METALS_DEV_API_KEY: ${{ secrets.METALS_DEV_API_KEY }}
+        run: node scripts/update_prices.js

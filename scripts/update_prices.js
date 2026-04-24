@@ -4,12 +4,13 @@
 // 抓取商品价格数据并写入 Supabase prices 表。
 //
 // 数据源:
-//   1. FRED API (https://fred.stlouisfed.org/docs/api/api_key.html)
-//      - WTI:    DCOILWTICO      (WTI Crude Oil, USD/bbl)
+//   FRED API (https://fred.stlouisfed.org/docs/api/api_key.html)
+//      - WTI:    DCOILWTICO       (WTI Crude Oil, USD/bbl)
 //      - BRENT:  DCOILBRENTEU     (Brent Crude Oil, USD/bbl)
 //      - COPPER: PCOPPUSDM        (Copper, USD/MT → 除以 2204.62 = USD/lb)
-//      - GOLD:   WPUGOLD          (Producer Price Index: Gold, USD/oz 近似值)
-//      - SILVER: WPUPMSILVER      (Producer Price Index: Silver, USD/oz 近似值)
+//
+//   GOLD/SILVER: FRED 免费 API 无有效日度金价/银价，已移除。
+//      如需添加，请注册付费 API 或使用其他数据源（如 metals.dev 有效 key）。
 //
 // 环境变量:
 //   SUPABASE_URL                必填
@@ -26,17 +27,15 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const FRED_API_KEY = process.env.FRED_API_KEY;
 const DRY_RUN = process.env.DRY_RUN === '1';
 
-// ─── FRED 数据系列配置 ───────────────
+// ─── FRED 数据系列配置 ─────────────────
 // unitFactor: FRED 返回值的单位转换因子（乘以该值得到目标单位）
 const FRED_CONFIG = {
-  WTI:    { seriesId: 'DCOILWTICO',   name: 'WTI Crude',     unitFactor: 1         },
-  BRENT:  { seriesId: 'DCOILBRENTEU', name: 'Brent Crude',   unitFactor: 1         },
-  COPPER: { seriesId: 'PCOPPUSDM',    name: 'Copper',        unitFactor: 1/2204.62 },
-  GOLD:   { seriesId: 'WPUGOLD',       name: 'Gold',          unitFactor: 1         },
-  SILVER: { seriesId: 'WPUPMSILVER',   name: 'Silver',        unitFactor: 1         },
+  WTI:    { seriesId: 'DCOILWTICO',    name: 'WTI Crude',    unitFactor: 1         },
+  BRENT:  { seriesId: 'DCOILBRENTEU',  name: 'Brent Crude',  unitFactor: 1         },
+  COPPER: { seriesId: 'PCOPPUSDM',     name: 'Copper',       unitFactor: 1/2204.62 },
 };
 
-// ─── Supabase 客户端 ───────────────────
+// ─── Supabase 客户端 ─────────────────────
 let supabase;
 function getSupabase() {
   if (!supabase) {
@@ -95,7 +94,7 @@ async function fetchFredPrice(seriesId, symbol) {
   return rawValue;
 }
 
-// ─── 数据库更新 ────────────────────────
+// ─── 数据库更新 ──────────────────────
 async function updatePrice(symbol, newPrice, source) {
   const { data: current } = await getSupabase()
     .from('prices')
@@ -130,7 +129,7 @@ async function updatePrice(symbol, newPrice, source) {
   }
 }
 
-// ─── 主流程 ────────────────────────────
+// ─── 主流程 ──────────────────────────
 async function main() {
   requireEnv();
   console.log('🚀 开始更新商品价格...\n');

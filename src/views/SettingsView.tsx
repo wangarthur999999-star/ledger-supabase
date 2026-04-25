@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Globe, Moon, Bell, MessageCircle, ShieldCheck, LogOut, ChevronRight, User, Check, Loader2, Pencil, Save, X, Mail, Phone } from "lucide-react";
+import { Globe, Bell, MessageCircle, ShieldCheck, LogOut, ChevronRight, User, Check, Loader2, Pencil, Save, X, Mail, Phone } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { fetchProfile, updateProfile, UserProfile } from "../api/profile";
 import { useSettings } from "../context/SettingsContext";
@@ -7,7 +7,7 @@ import { useSettings } from "../context/SettingsContext";
 const APP_VERSION = "2.4.0";
 
 export default function SettingsView() {
-  const { t, language, setLanguage, darkMode, setDarkMode } = useSettings();
+  const { t, language, setLanguage } = useSettings();
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -220,32 +220,6 @@ export default function SettingsView() {
                 EN
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* Display */}
-        <div className="bg-white rounded-3xl p-6 border border-surface-container">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2.5 bg-secondary-container text-secondary rounded-xl">
-              <Moon size={20} />
-            </div>
-            <h3 className="text-lg font-bold">{t('settings.display')}</h3>
-          </div>
-          <div className="flex justify-between items-center py-2">
-            <div>
-              <p className="font-bold text-on-surface">{t('settings.darkMode')}</p>
-              <p className="text-xs text-on-surface-variant">{darkMode ? t('settings.darkModeOn') : t('settings.darkModeOff')}</p>
-            </div>
-            <button
-              onClick={() => { setDarkMode(!darkMode); showToast(); }}
-              className={`w-12 h-6 rounded-full relative p-1 transition-colors ${darkMode ? 'bg-primary' : 'bg-surface-container'}`}
-            >
-              <motion.div
-                animate={{ x: darkMode ? 24 : 0 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                className="w-4 h-4 bg-white rounded-full shadow-sm"
-              />
-            </button>
           </div>
         </div>
 

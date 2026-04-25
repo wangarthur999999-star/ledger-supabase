@@ -5,7 +5,6 @@ import React, {
   useState,
 } from 'react';
 import { fetchProfile, updateProfile } from '../api/profile';
-import { supabase } from '../lib/supabase';
 
 type Lang = 'NL' | 'EN';
 
@@ -101,10 +100,6 @@ const translations = {
     'settings.general': 'Algemeen',
     'settings.language': 'Taal',
     'settings.languageSub': 'Kies uw voorkeurstaal',
-    'settings.display': 'Weergave',
-    'settings.darkMode': 'Donkere Modus',
-    'settings.darkModeOn': 'Ingeschakeld',
-    'settings.darkModeOff': 'Systeem standaard',
     'settings.notifications': 'Meldingen',
     'settings.rateAlerts': 'Koerswaarschuwingen',
     'settings.rateAlertsSub': 'Ontvang meldingen bij grote SRD wijzigingen',
@@ -115,7 +110,7 @@ const translations = {
     'settings.whatsappSub': 'Direct antwoord op uw vragen',
     'settings.privacy': 'Privacy Beleid',
     'settings.privacySub': 'Hoe wij uw data beschermen',
-    'settings.privacyAlert': 'Privacybeleid: Uw gegevens worden veilig opgeslagen in Supabase en worden nooit gedeeld met derden.',
+    'settings.privacyAlert': 'Privacybeleid: Uw voorkeuren worden lokaal in uw browser opgeslagen en worden niet naar onze servers verzonden.',
     'settings.logout': 'Uitloggen',
     'settings.version': 'Versie {v} • Gemaakt in Suriname 🇸🇷',
     'settings.logoutConfirmTitle': 'Uitloggen?',
@@ -214,10 +209,6 @@ const translations = {
     'settings.general': 'General',
     'settings.language': 'Language',
     'settings.languageSub': 'Choose your preferred language',
-    'settings.display': 'Display',
-    'settings.darkMode': 'Dark Mode',
-    'settings.darkModeOn': 'Enabled',
-    'settings.darkModeOff': 'System default',
     'settings.notifications': 'Notifications',
     'settings.rateAlerts': 'Rate Alerts',
     'settings.rateAlertsSub': 'Get notified of major SRD changes',
@@ -228,7 +219,7 @@ const translations = {
     'settings.whatsappSub': 'Direct answers to your questions',
     'settings.privacy': 'Privacy Policy',
     'settings.privacySub': 'How we protect your data',
-    'settings.privacyAlert': 'Privacy policy: Your data is stored securely in Supabase and is never shared with third parties.',
+    'settings.privacyAlert': 'Privacy policy: Your preferences are stored locally in your browser and are not sent to our servers.',
     'settings.logout': 'Log out',
     'settings.version': 'Version {v} • Made in Suriname 🇸🇷',
     'settings.logoutConfirmTitle': 'Log out?',
@@ -260,9 +251,7 @@ function interpolate(template: string, vars?: Record<string, string | number>): 
 interface SettingsContextType {
   language: Lang;
   locale: string;
-  darkMode: boolean;
   setLanguage: (lang: Lang) => void;
-  setDarkMode: (dark: boolean) => void;
   t: (key: TKey, vars?: Record<string, string | number>) => string;
 }
 
@@ -270,38 +259,20 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Lang>('NL');
-  const [darkMode, setDarkModeState] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session) {
-        const profile = await fetchProfile();
-        if (profile) {
-          if (profile.language === 'NL' || profile.language === 'EN') {
-            setLanguageState(profile.language);
-          }
-          setDarkModeState(Boolean(profile.dark_mode));
+    fetchProfile().then((profile) => {
+      if (profile) {
+        if (profile.language === 'NL' || profile.language === 'EN') {
+          setLanguageState(profile.language);
         }
       }
     });
   }, []);
 
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
-
   const setLanguage = async (lang: Lang) => {
     setLanguageState(lang);
     await updateProfile({ language: lang });
-  };
-
-  const setDarkMode = async (dark: boolean) => {
-    setDarkModeState(dark);
-    await updateProfile({ dark_mode: dark });
   };
 
   const t = (key: TKey, vars?: Record<string, string | number>): string => {
@@ -314,7 +285,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <SettingsContext.Provider
-      value={{ language, locale, darkMode, setLanguage, setDarkMode, t }}
+      value={{ language, locale, setLanguage, t }}
     >
       {children}
     </SettingsContext.Provider>

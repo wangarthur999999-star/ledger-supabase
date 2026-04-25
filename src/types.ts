@@ -21,18 +21,4 @@ export interface Folder {
   image: string;
 }
 
-export interface ProductPrice {
-  supermarket: string;
-  price: number;
-  availability: 'OP VOORRAAD' | 'BEPERKT' | 'UITVERKOCHT';
-}
-
-export interface Product {
-  id: string;
-  name: string;
-  lowestPrice: number;
-  image: string;
-  prices: ProductPrice[];
-}
-
 export type TabId = 'dashboard' | 'rates' | 'prices' | 'folders' | 'settings';

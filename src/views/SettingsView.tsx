@@ -274,7 +274,7 @@ export default function SettingsView() {
               <ChevronRight className="text-on-surface-variant group-hover:translate-x-1 transition-transform" />
             </button>
             <button
-              onClick={() => alert(t('settings.privacyAlert'))}
+              onClick={() => window.open('/privacy.html', '_blank', 'noopener')}
               className="flex items-center justify-between p-5 bg-white rounded-3xl border border-surface-container group hover:border-primary/20 transition-colors"
             >
               <div className="flex items-center gap-4">

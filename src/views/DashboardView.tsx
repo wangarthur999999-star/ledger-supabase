@@ -2,18 +2,13 @@ import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import CurrencyCard from "../components/CurrencyCard";
 import Converter from "../components/Converter";
-import FolderCarousel from "../components/FolderCarousel";
-import { ExchangeRate, TabId } from "../types";
+import { ExchangeRate } from "../types";
 import { fetchExchangeRates } from "../api/rates";
 import { formatRelativeTime } from "../lib/formatTime";
 import { useSettings } from "../context/SettingsContext";
 import { supabase } from "../lib/supabase";
 
-interface DashboardViewProps {
-  onTabChange: (id: TabId) => void;
-}
-
-export default function DashboardView({ onTabChange }: DashboardViewProps) {
+export default function DashboardView() {
   const { t } = useSettings();
   const [rates, setRates] = useState<ExchangeRate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -83,7 +78,6 @@ export default function DashboardView({ onTabChange }: DashboardViewProps) {
       )}
 
       <Converter />
-      <FolderCarousel onTabChange={onTabChange} />
     </div>
   );
 }

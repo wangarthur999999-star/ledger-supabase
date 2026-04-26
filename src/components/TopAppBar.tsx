@@ -22,8 +22,6 @@ export default function TopAppBar({ activeTab, onTabChange }: TopAppBarProps) {
         return dateString.charAt(0).toUpperCase() + dateString.slice(1);
       case 'prices':
         return t('pageTitle.prices');
-      case 'folders':
-        return t('pageTitle.folders');
       case 'settings':
         return t('pageTitle.settings');
       case 'rates':

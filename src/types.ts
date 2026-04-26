@@ -14,11 +14,4 @@ export interface ExchangeRate {
   updatedAt?: string;
 }
 
-export interface Folder {
-  id: string;
-  name: string;
-  validity: string;
-  image: string;
-}
-
-export type TabId = 'dashboard' | 'rates' | 'prices' | 'folders' | 'settings';
+export type TabId = 'dashboard' | 'rates' | 'prices' | 'settings';

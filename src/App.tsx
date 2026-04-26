@@ -10,7 +10,6 @@ import BottomNavBar from "./components/BottomNavBar";
 import DashboardView from "./views/DashboardView";
 import RatesView from "./views/RatesView";
 import PricesView from "./views/PricesView";
-import FoldersView from "./views/FoldersView";
 import SettingsView from "./views/SettingsView";
 import { TabId } from "./types";
 
@@ -22,17 +21,15 @@ export default function App() {
   const renderView = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <DashboardView onTabChange={handleTabChange} />;
+        return <DashboardView />;
       case 'rates':
         return <RatesView />;
       case 'prices':
         return <PricesView />;
-      case 'folders':
-        return <FoldersView />;
       case 'settings':
         return <SettingsView />;
       default:
-        return <DashboardView onTabChange={handleTabChange} />;
+        return <DashboardView />;
     }
   };
 

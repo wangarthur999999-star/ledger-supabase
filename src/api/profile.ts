@@ -17,7 +17,6 @@ export interface UserProfile {
   language: string;
   dark_mode: boolean;
   rate_alerts: boolean;
-  folder_alerts: boolean;
 }
 
 const STORAGE_KEY = 'ledger_suriname_profile_v1';
@@ -31,7 +30,6 @@ const DEFAULT_PROFILE: UserProfile = {
   language: 'NL',
   dark_mode: false,
   rate_alerts: false,
-  folder_alerts: false,
 };
 
 function readStorage(): UserProfile {

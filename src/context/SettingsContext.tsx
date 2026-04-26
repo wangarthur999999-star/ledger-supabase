@@ -22,7 +22,6 @@ const translations = {
     'nav.dashboard': 'Dashboard',
     'nav.rates': 'Koersen',
     'nav.prices': 'Prijzen',
-    'nav.folders': 'Folders',
     'nav.settings': 'Instellingen',
 
     // top bar
@@ -33,7 +32,6 @@ const translations = {
     // page titles
     'pageTitle.rates': 'Wisselkoersen',
     'pageTitle.prices': 'Prijsvergelijker',
-    'pageTitle.folders': 'Folders',
     'pageTitle.settings': 'Instellingen',
     'pageTitle.default': 'Sovereign Ledger',
 
@@ -69,15 +67,6 @@ const translations = {
     'card.official': 'Official (CBvS)',
     'card.street': 'Street (Cambio)',
 
-    // folders
-    'folders.title': 'Folders',
-    'folders.subtitle': 'Ontdek de nieuwste aanbiedingen van uw favoriete winkels.',
-    'folders.soonTitle': 'Binnenkort beschikbaar',
-    'folders.soonBody': 'Binnenkort kunnen lokale winkels hier hun folders en aanbiedingen delen. Houd deze pagina in de gaten!',
-    'folders.workingPill': 'Wij werken eraan',
-    'folders.carouselTitle': 'Nieuwste Folders',
-    'folders.carouselSeeAll': 'Bekijk alles',
-
     // prices
     'prices.title': 'Prijsvergelijker',
     'prices.subtitle': 'Vergelijk prijzen van dagelijkse boodschappen in één oogopslag.',
@@ -103,8 +92,6 @@ const translations = {
     'settings.notifications': 'Meldingen',
     'settings.rateAlerts': 'Koerswaarschuwingen',
     'settings.rateAlertsSub': 'Ontvang meldingen bij grote SRD wijzigingen',
-    'settings.folderAlerts': 'Nieuwe Folders',
-    'settings.folderAlertsSub': 'Meldingen voor de nieuwste aanbiedingen',
     'settings.support': 'Ondersteuning',
     'settings.whatsapp': 'WhatsApp Support',
     'settings.whatsappSub': 'Direct antwoord op uw vragen',
@@ -140,7 +127,6 @@ const translations = {
     'nav.dashboard': 'Dashboard',
     'nav.rates': 'Rates',
     'nav.prices': 'Prices',
-    'nav.folders': 'Flyers',
     'nav.settings': 'Settings',
 
     'topbar.refresh': 'Refresh',
@@ -149,7 +135,6 @@ const translations = {
 
     'pageTitle.rates': 'Exchange Rates',
     'pageTitle.prices': 'Price Comparison',
-    'pageTitle.folders': 'Flyers',
     'pageTitle.settings': 'Settings',
     'pageTitle.default': 'Sovereign Ledger',
 
@@ -181,14 +166,6 @@ const translations = {
     'card.official': 'Official (CBvS)',
     'card.street': 'Street (Cambio)',
 
-    'folders.title': 'Flyers',
-    'folders.subtitle': 'Discover the latest deals from your favorite stores.',
-    'folders.soonTitle': 'Coming soon',
-    'folders.soonBody': 'Local stores will soon be able to share their flyers and deals here. Stay tuned!',
-    'folders.workingPill': 'In the works',
-    'folders.carouselTitle': 'Latest Flyers',
-    'folders.carouselSeeAll': 'View all',
-
     'prices.title': 'Price Comparison',
     'prices.subtitle': 'Compare prices of everyday groceries at a glance.',
     'prices.soonTitle': 'Coming soon',
@@ -212,8 +189,6 @@ const translations = {
     'settings.notifications': 'Notifications',
     'settings.rateAlerts': 'Rate Alerts',
     'settings.rateAlertsSub': 'Get notified of major SRD changes',
-    'settings.folderAlerts': 'New Flyers',
-    'settings.folderAlertsSub': 'Alerts for the latest deals',
     'settings.support': 'Support',
     'settings.whatsapp': 'WhatsApp Support',
     'settings.whatsappSub': 'Direct answers to your questions',

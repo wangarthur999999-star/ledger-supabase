@@ -1,4 +1,4 @@
-import { LayoutGrid, TrendingUp, ShoppingBasket, BookOpen, Settings } from "lucide-react";
+import { LayoutGrid, TrendingUp, ShoppingBasket, Settings } from "lucide-react";
 import { motion } from "motion/react";
 import { TabId } from "../types";
 import { useSettings, TKey } from "../context/SettingsContext";
@@ -7,7 +7,6 @@ const NAV_ITEMS: { id: TabId; labelKey: TKey; icon: any }[] = [
   { id: 'dashboard', labelKey: 'nav.dashboard', icon: LayoutGrid },
   { id: 'rates', labelKey: 'nav.rates', icon: TrendingUp },
   { id: 'prices', labelKey: 'nav.prices', icon: ShoppingBasket },
-  { id: 'folders', labelKey: 'nav.folders', icon: BookOpen },
   { id: 'settings', labelKey: 'nav.settings', icon: Settings },
 ];
 

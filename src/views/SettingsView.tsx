@@ -19,7 +19,6 @@ export default function SettingsView() {
   const [editPhone, setEditPhone] = useState("");
 
   const [rateAlerts, setRateAlerts] = useState(true);
-  const [folderAlerts, setFolderAlerts] = useState(true);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showSavedToast, setShowSavedToast] = useState(false);
 
@@ -33,7 +32,6 @@ export default function SettingsView() {
         setEditEmail(data.email);
         setEditPhone(data.phone);
         setRateAlerts(data.rate_alerts);
-        setFolderAlerts(data.folder_alerts);
       }
       setIsLoading(false);
     };
@@ -251,26 +249,7 @@ export default function SettingsView() {
                 />
               </button>
             </div>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-4">
-                <span className="p-2 bg-primary/5 text-primary rounded-lg font-bold text-xs">📖</span>
-                <div>
-                  <p className="font-bold text-on-surface">{t('settings.folderAlerts')}</p>
-                  <p className="text-xs text-on-surface-variant">{t('settings.folderAlertsSub')}</p>
-                </div>
-              </div>
-              <button
-                onClick={() => { setFolderAlerts(!folderAlerts); saveProfileField('folder_alerts', !folderAlerts); }}
-                className={`w-12 h-6 rounded-full relative p-1 transition-colors ${folderAlerts ? 'bg-primary' : 'bg-surface-container'}`}
-              >
-                <motion.div
-                  animate={{ x: folderAlerts ? 24 : 0 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  className="w-4 h-4 bg-white rounded-full shadow-sm"
-                />
-              </button>
             </div>
-          </div>
         </div>
 
         {/* Support */}

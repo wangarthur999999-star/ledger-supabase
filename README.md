@@ -82,6 +82,8 @@ APK output: `android/app/build/outputs/apk/debug/app-debug.apk`
 ---
 
 ## Project Structure
+
+```
 ledger/
 ├── src/                  # React app
 │   ├── views/            # 4 main tabs: Dashboard, Rates, Prices, Settings
@@ -97,6 +99,7 @@ ledger/
 ├── public/               # static assets (privacy.html)
 ├── resources/            # icon.png, splash.png (sources for capacitor-assets)
 └── supabase-schema.sql   # database schema
+```
 
 ---
 

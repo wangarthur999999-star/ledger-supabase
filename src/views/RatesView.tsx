@@ -92,10 +92,16 @@ export default function RatesView() {
                       <p className="text-xs font-bold text-on-surface-variant">{rate.fullName}</p>
                     </div>
                   </div>
-                  <div className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold ${isUp ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
-                    {isUp ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-                    <span>{isUp ? '+' : ''}{rate.change}%</span>
-                  </div>
+                  {Number(rate.change) === 0 ? (
+                    <div className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold bg-surface-container-low text-on-surface-variant">
+                      <span>—</span>
+                    </div>
+                  ) : (
+                    <div className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold ${isUp ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                      {isUp ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                      <span>{isUp ? '+' : ''}{rate.change}%</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

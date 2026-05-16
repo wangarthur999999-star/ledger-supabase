@@ -1,0 +1,54 @@
+{
+  "client": "Lisa",
+  "phone": "+597 888-1234",
+  "language": "zh",
+  "service_id": "skin_booster",
+  "service_name": "水光针",
+  "service_en": "Skin Booster",
+  "date": "2026-05-21",
+  "day_cn": "周四",
+  "time": "14:30",
+  "price": 150,
+  "cost": 30,
+  "profit": 120,
+  "source": "your_new_client",
+  "source_desc": "你带来的新客户(扣除耗材后50:50)",
+  "andy_share": 60.0,
+  "your_share": 60.0,
+  "followups": [
+    {
+      "due_date": "2026-05-21",
+      "day_label": "当晚",
+      "action": "关心消息",
+      "template_key": "post_treatment_check",
+      "done": false
+    },
+    {
+      "due_date": "2026-05-24",
+      "day_label": "D3",
+      "action": "问恢复、要对比图",
+      "template_key": "day3_followup",
+      "done": false
+    },
+    {
+      "due_date": "2026-05-28",
+      "day_label": "D7",
+      "action": "确认效果、试探升单/转介绍",
+      "template_key": "day7_followup",
+      "done": false
+    },
+    {
+      "due_date": "2026-06-20",
+      "day_label": "D30",
+      "action": "提醒复购、推荐新项目",
+      "template_key": "day30_followup",
+      "done": false
+    }
+  ],
+  "messages": {
+    "booking_confirmation": "【mizhi · 美肌所】预约确认 ✅\n\nLisa 你好，你的预约已锁定：\n📅 时间：周四 14:30\n📍 地址：Paramaribo, Tourtonnellon 21, RCE SALON\n\n术前提醒：\n• 当天不要化妆\n• 如有过敏史请提前告知\n• 请准时到达\n\n如需改期请提前24小时联系我。崔曦心老师等你来✨",
+    "pre_treatment_reminder": "Lisa 明天见！⏰ 周四 14:30\n\n术前提醒：\n• 不要化妆，清洁脸部\n• 如有感冒/发烧/过敏请提前告诉我\n• 地址：Paramaribo, Tourtonnellon 21, RCE SALON\n\n到了发消息给我，我出来接你～"
+  },
+  "notes": "FB广告来的，对水光针有兴趣，第一次做",
+  "registered_at": "2026-05-15T21:32:10.365507"
+}

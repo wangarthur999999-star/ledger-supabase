@@ -1,0 +1,90 @@
+{
+  "week_start": "2026-05-18",
+  "brand": "mizhi",
+  "slots": [
+    {
+      "day": "周一",
+      "time": "08:00",
+      "type": "fb_ig",
+      "product": "mizhi新客体验卡",
+      "benefit": "$30体验中国专家手法，零风险了解自己的皮肤",
+      "audience": "25-45岁苏里南华人女性，对医美好奇但犹豫",
+      "cta": "WhatsApp发送\"体验\"预约",
+      "hook_preference": "social_proof",
+      "visual_style": "testimonial",
+      "supporting": "南方医科大学毕业，深圳10年经验，苏里南唯一中国医美专家"
+    },
+    {
+      "day": "周一",
+      "time": "20:00",
+      "type": "fb_ig",
+      "product": "韩式半永久纹绣",
+      "benefit": "不是所有纹眉都会发红——关键在于用什么色料和技术",
+      "audience": "25-50岁关注眉毛美感的女性",
+      "cta": "留言\"眉毛\"获取Before/After案例",
+      "hook_preference": "pattern_interrupt",
+      "visual_style": "education",
+      "supporting": "市面上便宜的纹眉用工业色料，1-2年必发红。我们用进口医用色料"
+    },
+    {
+      "day": "周二",
+      "time": "08:00",
+      "type": "fb_ig",
+      "product": "菲洛嘉水光针",
+      "benefit": "一次水光针=1000次面霜，从真皮层解决干燥",
+      "audience": "25-45岁苏里南华人女性",
+      "cta": "私信预约免费皮肤检测",
+      "hook_preference": "direct_benefit",
+      "visual_style": "product_focus",
+      "supporting": "法国原装进口，深层补水保湿，72小时持续效果"
+    },
+    {
+      "day": "周三",
+      "time": "08:00",
+      "type": "fb_ig",
+      "product": "皮肤管理 + 抗衰光电",
+      "benefit": "苏里南的紫外线让你的皮肤比实际年龄老5岁",
+      "audience": "30-50岁关注抗衰的华人女性",
+      "cta": "私信预约",
+      "hook_preference": "emotion_bait",
+      "visual_style": "lifestyle",
+      "supporting": "热带气候+紫外线是皮肤第一大杀手。好在有皮秒+IPL双效方案"
+    },
+    {
+      "day": "周四",
+      "time": "12:00",
+      "type": "fb_ig",
+      "product": "自然效果医美",
+      "benefit": "你看不出来的医美，才是最成功的医美",
+      "audience": "25-45岁苏里南华人女性",
+      "cta": "私信看更多真实案例",
+      "hook_preference": "curiosity_gap",
+      "visual_style": "before_after",
+      "supporting": "自然效果，不僵硬不假脸。Andy做的是\"让人夸你变好看了，但看不出你做了什么\""
+    },
+    {
+      "day": "周五",
+      "time": "08:00",
+      "type": "fb_ig",
+      "product": "闺蜜同行专属优惠",
+      "benefit": "本周六开放3个免费面诊名额",
+      "audience": "25-50岁苏里南华人女性",
+      "cta": "发送\"预约+姓名\"锁定名额",
+      "hook_preference": "direct_benefit",
+      "visual_style": "promo",
+      "supporting": "仅限3个名额，先到先得。带闺蜜同来第二人半价"
+    },
+    {
+      "day": "周六",
+      "time": "10:00",
+      "type": "geo_longform",
+      "product": "苏里南医美完全指南",
+      "benefit": "在苏里南做医美，你需要知道的全部真相",
+      "audience": "对医美好奇但犹豫的苏里南华人 + 当地女性",
+      "cta": "收藏+转发给需要的朋友",
+      "hook_preference": "curiosity_gap",
+      "visual_style": "education",
+      "supporting": "从怎么选医生、怎么看药品真假、到术后护理的完整攻略"
+    }
+  ]
+}

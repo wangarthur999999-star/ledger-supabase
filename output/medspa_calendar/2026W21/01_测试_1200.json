@@ -1,0 +1,75 @@
+{
+  "product": "菲洛嘉水光针",
+  "benefit": "深层补水保湿",
+  "audience": "25-45岁女性",
+  "hook": "这一针，让你的皮肤喝饱1000杯水。",
+  "hook_type": "Curiosity Gap",
+  "all_hooks": [
+    {
+      "index": 1,
+      "type": "Pattern-Interrupt",
+      "text": "为什么你每天敷面膜，脸还是干？",
+      "score": 9,
+      "score_reason": "直接挑战常见护肤习惯，引发好奇，适合25-45岁女性"
+    },
+    {
+      "index": 2,
+      "type": "Curiosity Gap",
+      "text": "这一针，让你的皮肤喝饱1000杯水。",
+      "score": 10,
+      "score_reason": "数字夸张但具体，强烈好奇心驱使点击"
+    },
+    {
+      "index": 3,
+      "type": "Direct Benefit",
+      "text": "深层补水，72小时持续保湿。",
+      "score": 8,
+      "score_reason": "明确承诺效果，时间具体，直接满足需求"
+    },
+    {
+      "index": 4,
+      "type": "Social Proof",
+      "text": "10万女性已选择菲洛嘉水光针。",
+      "score": 9,
+      "score_reason": "具体数据增强信任，利用从众心理"
+    },
+    {
+      "index": 5,
+      "type": "Emotion-Bait",
+      "text": "告别干燥起皮，重拾水润自信。",
+      "score": 8,
+      "score_reason": "触发干燥困扰，唤起对水润肌肤的渴望"
+    }
+  ],
+  "facebook": {
+    "body": "这一针，让你的皮肤喝饱1000杯水💧\n\n每到换季，皮肤就像干裂的土地，涂多少面霜都锁不住水？其实，真正的补水要从真皮层开始。\n菲洛嘉水光针，法国原装，深层补水保湿，效果立竿见影。安全、专业，给你的肌肤一次水润新生。\n\n你平时最烦恼的皮肤问题是什么？",
+    "engagement_question": "你平时最烦恼的皮肤问题是什么？"
+  },
+  "instagram": {
+    "caption": "这一针，让你的皮肤喝饱1000杯水💧\n\n菲洛嘉水光针，法国原装，深层补水保湿。\n安全有效，效果看得见。\n\n私信预约，开启水润之旅✨",
+    "hashtags": [
+      "#skincare",
+      "#beauty",
+      "#hydration",
+      "#菲洛嘉",
+      "#水光针",
+      "#补水保湿",
+      "#法国原装",
+      "#护肤",
+      "#美容",
+      "#抗衰老",
+      "#菲洛嘉水光针",
+      "#深层补水",
+      "#保湿秘诀",
+      "#水润肌肤",
+      "#医美护肤"
+    ],
+    "hashtag_comment": "Hashtags: #skincare #beauty #hydration #菲洛嘉 #水光针 #补水保湿 #法国原装 #护肤 #美容 #抗衰老 #菲洛嘉水光针 #深层补水 #保湿秘诀 #水润肌肤 #医美护肤"
+  },
+  "generated_at": "2026-05-15T17:15:24.898862",
+  "slot_day": "测试",
+  "slot_time": "1200",
+  "slot_type": "fb_ig",
+  "visual_style": "product_focus",
+  "hook_preference": "direct_benefit"
+}

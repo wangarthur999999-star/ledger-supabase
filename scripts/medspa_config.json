@@ -1,0 +1,25 @@
+{
+  "ai": {
+    "provider": "deepseek",
+    "model": "deepseek-chat",
+    "base_url": "https://api.deepseek.com",
+    "_comment": "API key loaded from DEEPSEEK_API_KEY env var"
+  },
+  "meta": {
+    "fb_page_id": "",
+    "ig_business_account_id": "",
+    "access_token": ""
+  },
+  "brand": {
+    "market": "Suriname, Paramaribo",
+    "name": "菲洛嘉水光针",
+    "tone_pillars": ["专业", "可信赖", "精致"],
+    "forbidden_words": ["打折", "低价", "廉价", "三无"],
+    "must_include_kw": ["法国原装", "安全", "效果"],
+    "emoji_limit": 3,
+    "sentence_style": "short_punchy",
+    "ig_handle": "@filorga_beauty"
+  },
+  "auto_post": false,
+  "comment": "auto_post=false means generate only, no auto-publish"
+}

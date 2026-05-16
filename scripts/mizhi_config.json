@@ -1,0 +1,84 @@
+{
+  "brand": {
+    "name": "mizhi · 美肌所",
+    "ig_handle": "@mizhi.beauty.sr",
+    "fb_page": "mizhi Beauty Atelier",
+    "location": "Paramaribo, Tourtonnellon 21, RCE SALON",
+    "tone_pillars": ["专业", "私密", "可信赖"],
+    "forbidden_words": ["打折", "低价", "廉价", "三无", "保证", "100%"],
+    "must_include_kw": ["中国专家", "十年经验", "私人定制", "预约制"],
+    "emoji_limit": 3,
+    "sentence_style": "短句为主，自然口语，不学术"
+  },
+
+  "technician": {
+    "name": "崔曦心 (Andy)",
+    "title": "南方医科大学 | 深圳10年医美经验",
+    "languages": ["中文"],
+    "role": "技术操作 | 耗材采购 | 卫生安全"
+  },
+
+  "operator": {
+    "name": "Arthur",
+    "languages": ["中文", "English", "Nederlands"],
+    "role": "获客 | 翻译 | 预约 | 回访 | 品牌运营"
+  },
+
+  "services": [
+    {"id": "trial_card", "category": "引流", "name_cn": "新客体验卡", "name_en": "Trial Card", "name_nl": "Proefkaart", "price": 30, "cost": 5, "duration_min": 30},
+    {"id": "deep_cleanse", "category": "皮肤管理", "name_cn": "深层清洁", "name_en": "Deep Cleansing", "name_nl": "Dieptereiniging", "price": 50, "cost": 8, "duration_min": 45},
+    {"id": "calming", "category": "皮肤管理", "name_cn": "镇静修复", "name_en": "Calming Repair", "name_nl": "Kalmerende Verzorging", "price": 60, "cost": 10, "duration_min": 50},
+    {"id": "whitening", "category": "皮肤管理", "name_cn": "美白焕肤", "name_en": "Whitening", "name_nl": "Verhelderend", "price": 70, "cost": 12, "duration_min": 60},
+    {"id": "powder_brows", "category": "半永久纹绣", "name_cn": "韩式雾眉", "name_en": "Powder Brows", "name_nl": "Poeder Wenkbrauwen", "price": 180, "cost": 25, "duration_min": 120, "includes": "1次补色"},
+    {"id": "microblading", "category": "半永久纹绣", "name_cn": "野生线条眉", "name_en": "Microblading", "name_nl": "Haarlijn Wenkbrauwen", "price": 220, "cost": 30, "duration_min": 120, "includes": "1次补色"},
+    {"id": "combo_brows", "category": "半永久纹绣", "name_cn": "丝雾眉", "name_en": "Combo Brows", "name_nl": "Combinatie Wenkbrauwen", "price": 250, "cost": 35, "duration_min": 150, "includes": "1次补色"},
+    {"id": "lip_blush", "category": "半永久纹绣", "name_cn": "果冻唇", "name_en": "Lip Blush", "name_nl": "Lip Blush", "price": 200, "cost": 30, "duration_min": 120, "includes": "1次补色"},
+    {"id": "skin_booster", "category": "微整形", "name_cn": "水光针", "name_en": "Skin Booster", "name_nl": "Huidbooster", "price": 150, "cost": 30, "duration_min": 45},
+    {"id": "anti_wrinkle", "category": "微整形", "name_cn": "抗皱针", "name_en": "Anti-Wrinkle", "name_nl": "Rimpelbehandeling", "price": 180, "cost": 45, "duration_min": 30, "note": "单部位起"},
+    {"id": "filler", "category": "微整形", "name_cn": "玻尿酸填充", "name_en": "Filler", "name_nl": "Hyaluronzuur Filler", "price": 250, "cost": 80, "duration_min": 45, "note": "单部位起"},
+    {"id": "thread_lift", "category": "微整形", "name_cn": "线雕全脸提升", "name_en": "Thread Lift", "name_nl": "Draadlift", "price": 600, "cost": 150, "duration_min": 90},
+    {"id": "fat_dissolve", "category": "微整形", "name_cn": "溶脂瘦脸", "name_en": "Fat Dissolve", "name_nl": "Vetoplossing", "price": 200, "cost": 50, "duration_min": 45},
+    {"id": "pico_laser", "category": "光电", "name_cn": "皮秒去斑", "name_en": "Pico Laser", "name_nl": "Pico Laser", "price": 180, "cost": 40, "duration_min": 45},
+    {"id": "hair_removal", "category": "光电", "name_cn": "无痛冰点脱毛", "name_en": "Painless Hair Removal", "name_nl": "Pijnloos Ontharen", "price": 80, "cost": 15, "duration_min": 30, "note": "单部位起"},
+    {"id": "ipl", "category": "光电", "name_cn": "彩光嫩肤(IPL)", "name_en": "IPL Photorejuvenation", "name_nl": "IPL Huidverjonging", "price": 120, "cost": 25, "duration_min": 45},
+    {"id": "tattoo_removal", "category": "光电", "name_cn": "洗眉/洗纹身", "name_en": "Tattoo Removal", "name_nl": "Tattoo Verwijderen", "price": 100, "cost": 20, "duration_min": 30, "note": "按次"}
+  ],
+
+  "profit_split": {
+    "andy_repeat": {"andy": 1.0, "you": 0.0, "desc": "Andy老客户及老客转介绍"},
+    "your_new_client": {"andy": 0.5, "you": 0.5, "desc": "你带来的新客户(扣除耗材后50:50)"},
+    "social_media_exclusive": {"andy": 0.4, "you": 0.6, "desc": "社交媒体独带新客"},
+    "retail": {"andy": 0.75, "you": 0.25, "desc": "零售产品提成(建议谈20-30%)"}
+  },
+
+  "followup_schedule": [
+    {"day": 0, "label": "当晚", "action": "关心消息", "template_key": "post_treatment_check"},
+    {"day": 3, "label": "D3", "action": "问恢复、要对比图", "template_key": "day3_followup"},
+    {"day": 7, "label": "D7", "action": "确认效果、试探升单/转介绍", "template_key": "day7_followup"},
+    {"day": 30, "label": "D30", "action": "提醒复购、推荐新项目", "template_key": "day30_followup"}
+  ],
+
+  "target_audiences": [
+    {"id": "a", "label": "华人阔太/老板娘", "age_range": "35-55", "price_sensitivity": "低", "main_services": ["线雕", "玻尿酸填充", "皮秒", "抗皱"]},
+    {"id": "b", "label": "华人打工/中产女性", "age_range": "25-45", "price_sensitivity": "中", "main_services": ["纹绣", "水光针", "光子嫩肤"]},
+    {"id": "c", "label": "苏里南当地女性", "age_range": "25-50", "price_sensitivity": "中高", "main_services": ["皮肤管理", "脱毛", "皮秒", "纹绣"]},
+    {"id": "d", "label": "华人年轻女性", "age_range": "18-28", "price_sensitivity": "高", "main_services": ["深层清洁", "脱毛", "体验卡"]}
+  ],
+
+  "google_sheets": {
+    "ops_sheet_id": "1Ome62FlqU1KXS06fKothL8N_rc4oA6xu9K5TyFU5520",
+    "price_sheet_id": "15C251vCkg1rbvRKYEfBbUprmyctOmR3WURi_rJhRlgs",
+    "tabs": {
+      "clients": "客户追踪",
+      "booking": "预约日历",
+      "profit_split": "分账记录"
+    }
+  },
+
+  "booking": {
+    "max_per_day": 3,
+    "slot_duration_min": 30,
+    "available_days": ["周一", "周二", "周三", "周四", "周五", "周六"],
+    "time_slots": ["09:00", "10:30", "13:00", "14:30", "16:00"]
+  }
+}

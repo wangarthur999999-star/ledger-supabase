@@ -1,0 +1,46 @@
+[
+  {
+    "client": "Lisa",
+    "service": "水光针",
+    "treatment_date": "2026-05-21",
+    "due_date": "2026-05-21",
+    "day_label": "当晚",
+    "action": "关心消息",
+    "template_key": "post_treatment_check",
+    "done": false,
+    "notes": ""
+  },
+  {
+    "client": "Lisa",
+    "service": "水光针",
+    "treatment_date": "2026-05-21",
+    "due_date": "2026-05-24",
+    "day_label": "D3",
+    "action": "问恢复、要对比图",
+    "template_key": "day3_followup",
+    "done": false,
+    "notes": ""
+  },
+  {
+    "client": "Lisa",
+    "service": "水光针",
+    "treatment_date": "2026-05-21",
+    "due_date": "2026-05-28",
+    "day_label": "D7",
+    "action": "确认效果、试探升单/转介绍",
+    "template_key": "day7_followup",
+    "done": false,
+    "notes": ""
+  },
+  {
+    "client": "Lisa",
+    "service": "水光针",
+    "treatment_date": "2026-05-21",
+    "due_date": "2026-06-20",
+    "day_label": "D30",
+    "action": "提醒复购、推荐新项目",
+    "template_key": "day30_followup",
+    "done": false,
+    "notes": ""
+  }
+]

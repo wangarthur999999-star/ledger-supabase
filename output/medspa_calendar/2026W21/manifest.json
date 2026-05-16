@@ -1,0 +1,72 @@
+{
+  "week_start": "2026-05-18",
+  "week_label": "2026W21",
+  "brand": "菲洛嘉水光针",
+  "generated_at": "2026-05-15T21:00:50.366651",
+  "total_slots": 7,
+  "slots": [
+    {
+      "index": 1,
+      "day": "周一",
+      "time": "08:00",
+      "file": "01_周一_0800.json",
+      "product": "mizhi新客体验卡",
+      "hook": "",
+      "status": "dry_run"
+    },
+    {
+      "index": 2,
+      "day": "周一",
+      "time": "20:00",
+      "file": "02_周一_2000.json",
+      "product": "韩式半永久纹绣",
+      "hook": "",
+      "status": "dry_run"
+    },
+    {
+      "index": 3,
+      "day": "周二",
+      "time": "08:00",
+      "file": "03_周二_0800.json",
+      "product": "菲洛嘉水光针",
+      "hook": "",
+      "status": "dry_run"
+    },
+    {
+      "index": 4,
+      "day": "周三",
+      "time": "08:00",
+      "file": "04_周三_0800.json",
+      "product": "皮肤管理 + 抗衰光电",
+      "hook": "",
+      "status": "dry_run"
+    },
+    {
+      "index": 5,
+      "day": "周四",
+      "time": "12:00",
+      "file": "05_周四_1200.json",
+      "product": "自然效果医美",
+      "hook": "",
+      "status": "dry_run"
+    },
+    {
+      "index": 6,
+      "day": "周五",
+      "time": "08:00",
+      "file": "06_周五_0800.json",
+      "product": "闺蜜同行专属优惠",
+      "hook": "",
+      "status": "dry_run"
+    },
+    {
+      "index": 7,
+      "day": "周六",
+      "time": "10:00",
+      "file": "07_周六_1000.json",
+      "product": "苏里南医美完全指南",
+      "hook": "",
+      "status": "dry_run"
+    }
+  ]
+}

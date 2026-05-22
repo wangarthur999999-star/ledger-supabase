@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<!--
+  RELEASE TODO: 上线前确认以下内容是当前真实信息:
+    - 第 1 节: 责任主体 (Arthur Wang) 是否还是 dev/maintainer
+    - 第 9 节: 联系邮箱 (mingkaiw570@gmail.com) — 用同样邮箱回复用户咨询
+    - 文末"Laatst bijgewerkt / Last updated": 改成当前发布日期
+  privacy policy 不能用 env 注入 — 用户对应何法律实体必须明确写出来。
+-->
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#004532">
+  <title>Privacy · Ledger SR</title>
+  <meta name="description" content="Privacy policy for Ledger SR / Privacybeleid voor Ledger SR.">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      line-height: 1.65;
+      color: #1c1b1f;
+      background: #fafafa;
+      padding: calc(2rem + env(safe-area-inset-top, 0px)) 1rem calc(4rem + env(safe-area-inset-bottom, 0px));
+    }
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 2.5rem 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    }
+    h1 { color: #004532; font-size: 2rem; font-weight: 800; margin-bottom: 0.25rem; letter-spacing: -0.02em; }
+    .subtitle { color: #5a5a5a; font-size: 0.95rem; margin-bottom: 1.5rem; }
+    h2 { color: #004532; font-size: 1.2rem; font-weight: 700; margin-top: 2rem; margin-bottom: 0.5rem; }
+    p, li { color: #2c2c2c; font-size: 0.98rem; margin-bottom: 0.75rem; }
+    ul { padding-left: 1.5rem; margin-bottom: 0.75rem; }
+    a { color: #004532; text-decoration: underline; text-underline-offset: 2px; }
+    .meta { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #e5e5e5; font-size: 0.85rem; color: #6a6a6a; }
+    .contact { background: #f0f7f3; border-left: 3px solid #004532; padding: 1rem 1.25rem; margin-top: 1rem; border-radius: 4px; }
+    .lang-switch { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .lang-switch button {
+      font: inherit;
+      padding: 0.4rem 1rem;
+      border: 1px solid #d4d4d4;
+      background: #fff;
+      border-radius: 999px;
+      cursor: pointer;
+      color: #6a6a6a;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .lang-switch button[aria-pressed="true"] { background: #004532; border-color: #004532; color: #fff; }
+    [data-section]:not(.active) { display: none; }
+    @media (max-width: 480px) {
+      body { padding: 1rem 0.5rem 2rem; }
+      main { padding: 1.5rem 1.25rem; border-radius: 12px; }
+      h1 { font-size: 1.5rem; }
+      h2 { font-size: 1.05rem; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="lang-switch" role="group" aria-label="Language">
+      <button type="button" data-lang="nl" aria-pressed="true">Nederlands</button>
+      <button type="button" data-lang="en" aria-pressed="false">English</button>
+    </div>
+
+    <!-- ─── Nederlands ───────────────────────────────────────────────── -->
+    <section data-section="nl" class="active" lang="nl">
+      <h1>Privacybeleid</h1>
+      <p class="subtitle">Ledger SR</p>
+
+      <p>Dit privacybeleid legt uit welke gegevens Ledger SR (de "App") verzamelt, hoe deze worden gebruikt, en wat uw rechten zijn. Wij houden het kort en eerlijk.</p>
+
+      <h2>1. Wie is verantwoordelijk?</h2>
+      <p>De App wordt ontwikkeld en beheerd door Arthur Wang als persoonlijk project. Voor vragen kunt u contact opnemen via het e-mailadres onderaan deze pagina.</p>
+
+      <h2>2. Welke gegevens verzamelt de App?</h2>
+      <p>De App verzamelt geen accountgegevens en vereist geen registratie. De volgende gegevens worden verwerkt:</p>
+      <ul>
+        <li><strong>Lokale voorkeuren</strong> (taal- en weergavevoorkeuren): uitsluitend in uw eigen apparaat opgeslagen (browser localStorage). Deze gegevens verlaten uw apparaat niet.</li>
+        <li><strong>Technische gegevens</strong>: bij het laden van de App ontvangen onze hostingproviders (zie sectie 4) automatisch uw IP-adres, browsertype en tijdstip van het bezoek. Dit zijn standaard webserverlogs.</li>
+        <li><strong>Foutdiagnostiek</strong> (indien ingeschakeld): wanneer de App crasht of een fout tegenkomt, kan Sentry een geanonimiseerde stacktrace, browserversie en eventueel een sessie-replay (UI-acties zonder invoerinhoud) verzenden. Dit is uitgeschakeld wanneer er geen DSN is geconfigureerd.</li>
+      </ul>
+      <p>De App verzamelt <strong>geen</strong> namen, e-mailadressen, telefoonnummers, locatiegegevens, contacten, foto's, financiële gegevens of andere persoonlijke informatie via servers.</p>
+
+      <h2>3. Waarvoor worden gegevens gebruikt?</h2>
+      <ul>
+        <li>Lokale voorkeuren worden alleen gebruikt om uw instellingen te onthouden tussen sessies.</li>
+        <li>Wisselkoersen en grondstofprijzen in de App komen uit openbare bronnen (CBvS, Finabank, FRED, metals.dev) en bevatten geen gebruikersgegevens.</li>
+        <li>Foutdiagnostiek wordt uitsluitend gebruikt om bugs op te sporen en op te lossen.</li>
+      </ul>
+
+      <h2>4. Derden</h2>
+      <p>De App maakt gebruik van de volgende diensten van derden:</p>
+      <ul>
+        <li><strong>Vercel</strong> (hosting van de webversie): kan IP-adres en bezoektijd loggen. <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener">vercel.com/legal/privacy-policy</a></li>
+        <li><strong>Supabase</strong> (database voor publieke koers- en prijsgegevens): kan IP-adres loggen bij API-aanroepen. <a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a></li>
+        <li><strong>Sentry</strong> (foutdiagnostiek, alleen indien ingeschakeld): ontvangt stacktraces, IP-adres, browser-/OS-versie en eventueel geanonimiseerde sessie-replay. <a href="https://sentry.io/privacy/" target="_blank" rel="noopener">sentry.io/privacy</a></li>
+      </ul>
+      <p>De App laadt alle lettertypen en pictogrammen lokaal vanuit het App-pakket. Er worden <strong>geen</strong> verzoeken naar Google Fonts of vergelijkbare CDN's gedaan.</p>
+      <p>Wij zelf verkopen of delen geen gegevens met andere partijen.</p>
+
+      <h2>5. Bewaartermijn</h2>
+      <p>Lokale voorkeuren blijven op uw apparaat staan totdat u deze handmatig verwijdert (via de instellingen van uw browser of door de App te de-installeren). Wij hebben geen toegang tot deze gegevens en kunnen deze niet centraal verwijderen.</p>
+
+      <h2>6. Uw rechten</h2>
+      <p>Omdat wij geen persoonlijke gegevens centraal opslaan, zijn er ook geen gegevens die wij over u kunnen inzien, wijzigen of verwijderen. U heeft volledige controle over uw lokale voorkeuren op uw eigen apparaat.</p>
+
+      <h2>7. Beveiliging</h2>
+      <p>Alle communicatie tussen de App en onze hostingproviders verloopt via versleutelde HTTPS-verbindingen. Lokale voorkeuren worden opgeslagen in de standaard browseropslag van uw apparaat.</p>
+
+      <h2>8. Wijzigingen in dit beleid</h2>
+      <p>Als dit privacybeleid wijzigt, wordt de nieuwe versie hier gepubliceerd met een bijgewerkte datum onderaan. Belangrijke wijzigingen worden waar mogelijk ook in de App aangekondigd.</p>
+
+      <h2>9. Contact</h2>
+      <div class="contact">
+        <p style="margin-bottom: 0.25rem;"><strong>Arthur Wang</strong></p>
+        <p style="margin-bottom: 0;">E-mail: <a href="mailto:mingkaiw570@gmail.com">mingkaiw570@gmail.com</a></p>
+      </div>
+
+      <p class="meta">Laatst bijgewerkt: 20 mei 2026</p>
+    </section>
+
+    <!-- ─── English ─────────────────────────────────────────────────── -->
+    <section data-section="en" lang="en">
+      <h1>Privacy Policy</h1>
+      <p class="subtitle">Ledger SR</p>
+
+      <p>This privacy policy explains what data Ledger SR (the "App") collects, how it is used, and what your rights are. We keep it short and honest.</p>
+
+      <h2>1. Who is responsible?</h2>
+      <p>The App is developed and maintained by Arthur Wang as a personal project. For questions, please use the email address at the bottom of this page.</p>
+
+      <h2>2. What data does the App collect?</h2>
+      <p>The App does not require an account and does not require registration. The following data is processed:</p>
+      <ul>
+        <li><strong>Local preferences</strong> (language and display preferences): stored only on your own device (browser localStorage). This data does not leave your device.</li>
+        <li><strong>Technical data</strong>: when the App loads, our hosting providers (see section 4) automatically receive your IP address, browser type, and access time. These are standard web server logs.</li>
+        <li><strong>Crash diagnostics</strong> (if enabled): when the App crashes or hits an error, Sentry may send an anonymized stack trace, browser version, and possibly a session replay (UI actions without input contents). This is disabled when no DSN is configured.</li>
+      </ul>
+      <p>The App does <strong>not</strong> collect names, email addresses, phone numbers, location data, contacts, photos, financial data, or other personal information via servers.</p>
+
+      <h2>3. What is the data used for?</h2>
+      <ul>
+        <li>Local preferences are only used to remember your settings between sessions.</li>
+        <li>Exchange rates and commodity prices shown in the App come from public sources (CBvS, Finabank, FRED, metals.dev) and contain no user data.</li>
+        <li>Crash diagnostics are used solely to find and fix bugs.</li>
+      </ul>
+
+      <h2>4. Third parties</h2>
+      <p>The App uses the following third-party services:</p>
+      <ul>
+        <li><strong>Vercel</strong> (web hosting): may log IP and access time. <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener">vercel.com/legal/privacy-policy</a></li>
+        <li><strong>Supabase</strong> (database for public rate and price data): may log IP on API calls. <a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a></li>
+        <li><strong>Sentry</strong> (crash diagnostics, only if enabled): receives stack traces, IP, browser/OS version, and possibly an anonymized session replay. <a href="https://sentry.io/privacy/" target="_blank" rel="noopener">sentry.io/privacy</a></li>
+      </ul>
+      <p>The App loads all fonts and icons locally from the App bundle. No requests are made to Google Fonts or similar CDNs.</p>
+      <p>We do not sell or share data with other parties.</p>
+
+      <h2>5. Retention</h2>
+      <p>Local preferences remain on your device until you manually clear them (via your browser settings or by uninstalling the App). We have no access to this data and cannot delete it remotely.</p>
+
+      <h2>6. Your rights</h2>
+      <p>Because we don't store personal data centrally, there is no data we can see, modify, or delete on your behalf. You have full control over your local preferences on your own device.</p>
+
+      <h2>7. Security</h2>
+      <p>All communication between the App and our hosting providers uses encrypted HTTPS connections. Local preferences are stored in your device's standard browser storage.</p>
+
+      <h2>8. Changes to this policy</h2>
+      <p>If this privacy policy changes, the new version will be published here with an updated date at the bottom. Significant changes will, where possible, be announced in the App as well.</p>
+
+      <h2>9. Contact</h2>
+      <div class="contact">
+        <p style="margin-bottom: 0.25rem;"><strong>Arthur Wang</strong></p>
+        <p style="margin-bottom: 0;">Email: <a href="mailto:mingkaiw570@gmail.com">mingkaiw570@gmail.com</a></p>
+      </div>
+
+      <p class="meta">Last updated: 20 May 2026</p>
+    </section>
+  </main>
+
+  <script>
+    // Read initial language from URL hash (?lang=en) or browser pref.
+    // Settings page passes ?lang=<current> when opening this URL.
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var initial = params.get('lang');
+      if (initial !== 'en' && initial !== 'nl') {
+        initial = (navigator.language || 'nl').toLowerCase().startsWith('en') ? 'en' : 'nl';
+      }
+      setLang(initial);
+
+      document.querySelectorAll('[data-lang]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          setLang(btn.getAttribute('data-lang'));
+        });
+      });
+
+      function setLang(lang) {
+        document.documentElement.lang = lang;
+        document.querySelectorAll('[data-section]').forEach(function (sec) {
+          sec.classList.toggle('active', sec.getAttribute('data-section') === lang);
+        });
+        document.querySelectorAll('[data-lang]').forEach(function (btn) {
+          btn.setAttribute('aria-pressed', String(btn.getAttribute('data-lang') === lang));
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

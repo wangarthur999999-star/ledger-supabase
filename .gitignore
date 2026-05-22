@@ -1,0 +1,32 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Temporary debug/scripts directory - not for version control
+scratch/
+
+# 临时验证脚本, 不进仓库
+_tmp_*.py
+
+supabase/.temp/
+
+# 构建过程产生的诊断输出
+build_log.txt
+
+# Android signing keystore (NEVER commit these!)
+ledger-release.keystore
+android/keystore.properties
+android/app/keystore.properties
+*.keystore
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db

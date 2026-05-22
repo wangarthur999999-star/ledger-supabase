@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- Capacitor APK 里 status bar / 浏览器 UA 都用 primary 色, 跟设计系统对齐 -->
+    <meta name="theme-color" content="#004532" />
+    <meta name="description" content="Real-time financial dashboard for Suriname — exchange rates and supermarket prices, in your pocket." />
+    <!-- PWA installable: 让 Chrome/Edge/Safari 给 "Add to Home Screen" 提示。
+         APK 里不影响 (Capacitor 用自己的 manifest)。 -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/png" href="/icon-512.png" />
+    <link rel="apple-touch-icon" href="/icon-512.png" />
+    <title>Ledger SR</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- 没 JS 的用户 (爬虫 / 安全模式 / 加载失败) 至少看到一句解释 -->
+    <noscript>
+      <div style="font-family: system-ui, sans-serif; padding: 2rem; max-width: 480px; margin: 4rem auto; text-align: center; color: #333;">
+        <h1 style="color: #004532; margin-bottom: 0.5rem;">Ledger SR</h1>
+        <p>This app requires JavaScript to display live exchange rates and commodity prices.</p>
+        <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">Please enable JavaScript and reload.</p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

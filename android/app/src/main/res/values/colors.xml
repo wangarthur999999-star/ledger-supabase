@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!--
+    跟 src/index.css 的设计 tokens 对齐:
+      colorPrimary       = #004532  (CSS --color-primary)
+      colorPrimaryDark   = #003124  (primary 暗 10%, status bar 用)
+      colorAccent        = #065f46  (CSS --color-primary-container)
+    Capacitor 默认 styles.xml 引用了这三个 color 但 colors.xml 漏了,
+    AGP 8 可能依赖 AppCompat 默认值兜过去, 但不是稳态。
+  -->
+  <color name="colorPrimary">#004532</color>
+  <color name="colorPrimaryDark">#003124</color>
+  <color name="colorAccent">#065f46</color>
+</resources>

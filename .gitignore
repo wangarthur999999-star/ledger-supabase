@@ -30,3 +30,5 @@ android/app/keystore.properties
 
 # OS
 Thumbs.db
+
+.vercel
